@@ -1,0 +1,190 @@
+/* ICI DESIGN PAGE DE COUVERTURE */
+
+
+:host {
+  display: block;
+  position: relative;
+  z-index: 10;
+}
+
+:host::before {
+  content: "";
+  position: absolute;
+  inset: -120px;
+  z-index: -1;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(180, 95, 35, 0.22) 0%,
+      rgba(90, 40, 15, 0.12) 32%,
+      rgba(0, 0, 0, 0) 70%
+    );
+
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.grimoire-cover {
+  width: 700px;
+  aspect-ratio: 1 / 1;
+
+  position: relative;
+
+  background-image: url('/assets/textures/T_Cuir_1.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  transition:
+    transform 0.45s ease,
+    filter 0.45s ease;
+
+  filter:
+    drop-shadow(0 25px 50px rgba(0,0,0,0.85))
+    drop-shadow(0 0 40px rgba(120,60,20,0.18));
+
+
+    /*  SYSTEM D'ANNIMATION VOIR EN BAS DU CSS KEYFRAME */
+    animation: grimoireFloat 4.5s ease-in-out infinite;
+}
+
+.grimoire-cover:active {
+  transform:
+    translateY(2px)
+    scale(0.99);
+
+  transition: transform 0.08s ease;
+}
+
+.grimoire-cover:hover {
+  animation-play-state: paused;
+
+  transform:
+    translateY(-8px)
+    scale(1.03)
+    rotate(-1deg);
+
+  filter:
+    drop-shadow(0 35px 70px rgba(0,0,0,0.95))
+    drop-shadow(0 0 65px rgba(180,100,40,0.35));
+}
+
+.cover-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cover-title {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 38px;
+  line-height: 1.15;
+  color: #d9aa58;
+  letter-spacing: 2px;
+  margin: 0 0 200px 0;
+  max-width: 60%;
+  text-align: center;
+  text-shadow:
+    0 3px 4px rgba(0,0,0,0.95),
+    0 0 12px rgba(180,120,40,0.22);
+  transform: translateX(45px);
+}
+
+.cover-subtitle {
+  position: absolute;
+  bottom: 165px;
+  font-family: "Cinzel", serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: rgba(230,190,120,0.72);
+  text-align: center;
+  max-width: 70%;
+  line-height: 1.4;
+  text-shadow:
+    0 2px 3px rgba(0,0,0,0.95);
+  transform: translateX(45px);
+    
+}
+
+.cover-hint {
+  position: absolute;
+
+  bottom: 85px;
+
+  font-family: "Cinzel", serif;
+
+  font-size: 11px;
+
+  letter-spacing: 3px;
+
+  color: rgba(220,180,120,0.42);
+
+  text-shadow:
+    0 2px 3px rgba(0,0,0,0.9);
+
+  transform: translateX(45px);
+
+  /*  SYSTEM D'ANNIMATION VOIR EN BAS DU CSS KEYFRAME */
+  animation: hintPulse 2.5s ease-in-out infinite;
+
+}
+
+.grimoire-cover.opening {
+  pointer-events: none;
+
+  /*  SYSTEM D'ANNIMATION VOIR EN BAS DU CSS KEYFRAME */
+  animation: bookOpening 0.9s ease-in-out forwards;
+}
+
+
+/*  ANNIMATION FLOTANTE */
+
+
+@keyframes grimoireFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(-0.5deg);
+  }
+
+  50% {
+    transform: translateY(-14px) rotate(0.5deg);
+  }
+}
+
+/*  ANNIMATION BOUTON "CLIQUE POUR OUVRIR" CLIGNOTANT */
+
+@keyframes hintPulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/*  ANNIMATION OUVERTURE LIVRE */
+@keyframes bookOpening {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+
+  45% {
+    transform: scale(1.08) rotate(-4deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.25) rotateY(-75deg);
+    opacity: 0;
+  }
+}

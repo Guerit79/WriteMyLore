@@ -1,0 +1,91 @@
+.book-page::-webkit-scrollbar {
+  width: 8px;
+}
+
+.book-page::-webkit-scrollbar-track {
+  background: rgba(74, 44, 20, 0.5);
+  border-radius: 10px;
+  margin: 4px 0;
+}
+
+.book-page::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.book-page::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(140, 100, 60, 0.6) 0%,
+    rgba(110, 75, 40, 0.65) 50%,
+    rgba(140, 100, 60, 0.6) 100%
+  );
+  border-radius: 10px;
+  border: 1px solid rgba(90, 60, 30, 0.4);
+  box-shadow: none;
+  transition: background 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;
+}
+
+/* État ACTIF : hover OU classe ajoutée par JS pendant/après le scroll */
+.book-page.scrolling-active::-webkit-scrollbar-thumb,
+.book-page::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 245, 200, 0.9) 0%,
+    rgba(212, 168, 67, 0.85) 30%,
+    rgba(176, 128, 48, 0.9) 60%,
+    rgba(255, 245, 200, 0.7) 100%
+  );
+  border-color: rgba(255, 230, 150, 0.4);
+  box-shadow:
+    0 0 6px rgba(255, 215, 120, 0.9),
+    0 0 12px rgba(255, 190, 80, 0.6),
+    0 0 20px rgba(255, 170, 60, 0.35),
+    inset 0 0 4px rgba(255, 255, 255, 0.6);
+  animation: scrollbar-glow 2.2s ease-in-out infinite;
+}
+
+.book-page::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #fff6d8 0%, #f0c860 40%, #d4a843 70%, #fff6d8 100%);
+  box-shadow:
+    0 0 10px rgba(255, 225, 140, 1),
+    0 0 20px rgba(255, 200, 90, 0.8),
+    0 0 32px rgba(255, 180, 70, 0.5),
+    inset 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.book-page::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #fff9e6, #ffdd88, #d4a843);
+}
+
+.scroll-magic-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fff6d0 0%,
+    #ffd97a 40%,
+    #d4a843 70%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px rgba(255, 215, 120, 0.9),
+    0 0 12px rgba(255, 190, 80, 0.6);
+
+  animation: magic-float linear forwards;
+}
+
+@keyframes magic-float {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -30px) scale(0.2);
+  }
+}

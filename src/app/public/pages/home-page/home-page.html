@@ -1,0 +1,9 @@
+<main class="home-page">
+  @if (!isBookOpen) {
+    <app-grimoire-cover (openBook)="openGrimoire()" />
+  }
+
+  @if (isBookOpen) {
+  <app-grimoire-book />
+}
+</main>
