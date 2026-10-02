@@ -1,0 +1,14 @@
+/* ICI CONTAINER DU LIVRE (contener global) ICI POUR MODIFIER L'ARRIERE PLANS */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #080402;
+}
+
+.opened-placeholder {
+  color: #d9aa58;
+  font-family: serif;
+  font-size: 32px;
+}
