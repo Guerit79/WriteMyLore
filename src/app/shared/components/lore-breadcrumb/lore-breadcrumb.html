@@ -1,0 +1,14 @@
+<nav class="lore-breadcrumb" aria-label="Fil d’Ariane du Lore">
+  <ol>
+    @for (entry of trail(); track entry.id; let last = $last) {
+      <li>
+        @if (last) {
+          <span aria-current="page">{{ entry.name }}</span>
+        } @else {
+          @let target = linkFor()(entry);
+          <a [routerLink]="target.commands" [queryParams]="target.queryParams">{{ entry.name }}</a>
+        }
+      </li>
+    }
+  </ol>
+</nav>

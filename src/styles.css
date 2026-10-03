@@ -1,3 +1,9 @@
+/* PLEIN ECRAN : suppression de la marge par défaut du navigateur (rebords blancs + défilement de 16px) */
+html,
+body {
+  margin: 0;
+}
+
 .book-page::-webkit-scrollbar {
   width: 8px;
 }
@@ -88,4 +94,113 @@
     opacity: 0;
     transform: translate(var(--drift), -30px) scale(0.2);
   }
+}
+
+/* GRIMOIRE : PAGE MONDE ET CHAPITRES DU LORE (hors budget CSS du composant) */
+.grimoire-book .chapter-heading,
+.grimoire-book .lore-card h3 {
+  font-family: "Cinzel", serif;
+  color: #3a1d0a;
+}
+
+.grimoire-book .chapter-heading {
+  margin: 28px 0 12px;
+  text-align: center;
+}
+
+.grimoire-book .chapter-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  columns: 2;
+}
+
+.grimoire-book .chapter-link {
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: #4a2410;
+  font: 18px "IM Fell English", serif;
+  text-decoration: underline rgba(122, 79, 18, 0.5);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.grimoire-book .chapter-link:hover,
+.grimoire-book .chapter-link.active {
+  color: #7a3a0c;
+  text-decoration-color: currentColor;
+}
+
+.grimoire-book .chapter-link:focus-visible,
+.grimoire-book .book-tab:focus-visible {
+  outline: 2px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+.grimoire-book .lore-card h3 {
+  margin: 20px 0 0;
+}
+
+.grimoire-book .lore-card .lore-card-type {
+  margin: 0;
+  font-style: italic;
+  font-size: 15px;
+}
+
+/* GRIMOIRE : ONGLETS ET LIENS DE LECTURE (onglets devenus des liens <a>, même rendu que les boutons) */
+.grimoire-book a.book-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.grimoire-book a.chapter-link {
+  display: inline-block;
+}
+
+.grimoire-book .lore-card h3 a {
+  color: inherit;
+  text-decoration: underline rgba(122, 79, 18, 0.5);
+  text-underline-offset: 4px;
+}
+
+.grimoire-book .lore-card h3 a:hover {
+  color: #7a3a0c;
+  text-decoration-color: currentColor;
+}
+
+.grimoire-book .lore-card h3 a:focus-visible {
+  outline: 2px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+/* GRIMOIRE : FICHE DETAILLEE */
+.grimoire-book .lore-entry .lore-breadcrumb {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #4a2410;
+}
+
+/* Sélecteurs renforcés : ils doivent l'emporter sur « .book-page h2 / p » du composant. */
+.grimoire-book .book-page .lore-entry > h2 {
+  margin-bottom: 4px;
+}
+
+.grimoire-book .book-page .lore-entry > p.lore-card-type {
+  margin: 0 0 16px;
+  text-align: center;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.grimoire-book .lore-entry-summary {
+  font-style: italic;
+}
+
+/* Les retours à la ligne simples saisis dans le Dashboard sont conservés. */
+.grimoire-book .lore-entry-text {
+  white-space: pre-line;
 }

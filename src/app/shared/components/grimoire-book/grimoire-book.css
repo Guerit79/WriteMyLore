@@ -1,5 +1,5 @@
 .grimoire-book {
-  width: min(1400px, 94vw);
+  width: min(1400px, calc(100vw - 2 * clamp(18px, 3.19vw, 44px) - 8px));
   height: min(790px, 88vh);
 
   display: grid;

@@ -1,0 +1,64 @@
+.lore-relations-heading {
+  margin: 12px 0 6px;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.lore-relations {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lore-relations li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(90, 60, 30, 0.25);
+}
+
+.lore-relations a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lore-relation-type {
+  font-style: italic;
+}
+
+.lore-relation-entry-type {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+.lore-relation-remove {
+  margin-left: auto;
+  padding: 2px 10px;
+  border: 1px solid #9b2c2c;
+  border-radius: 4px;
+  background: transparent;
+  color: #8a2222;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.lore-relation-remove:hover {
+  background: rgba(155, 44, 44, 0.1);
+}
+
+.lore-relation-remove:focus-visible,
+.lore-relations a:focus-visible {
+  outline: 2px solid #b07a1e;
+  outline-offset: 2px;
+}
+
+.lore-relations-empty {
+  margin: 0;
+  font-style: italic;
+}

@@ -1,0 +1,20 @@
+<header class="admin-page-header">
+  <h1>Dashboard Lore</h1>
+  <p class="admin-page-subtitle">{{ sectionLabel() }}</p>
+</header>
+
+@if (store.loadError(); as error) {
+  <p class="admin-alert admin-alert-error" role="alert">{{ error }}</p>
+}
+
+@switch (activeSection()) {
+  @case ('fiches') {
+    <app-lore-entries [editedId]="fiche()" />
+  }
+  @case ('relations') {
+    <app-lore-relations />
+  }
+  @default {
+    <app-lore-overview />
+  }
+}

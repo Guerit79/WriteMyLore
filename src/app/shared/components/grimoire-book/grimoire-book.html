@@ -1,72 +1,98 @@
 <div class="grimoire-book">
-  <div class="book-tabs side-tabs">
-    <button class="book-tab active">⌂ Accueil</button>
-    <button class="book-tab tab-races">🌿 Races</button>
-    <button class="book-tab tab-magie">✦ Magie</button>
-    <button class="book-tab tab-factions">⚔ Factions</button>
-    <button class="book-tab tab-lieux">🗺 Lieux</button>
-    <button class="book-tab tab-heros">★ Héros</button>
-  </div>
+  <nav class="book-tabs side-tabs" aria-label="Chapitres du grimoire">
+    @for (tab of tabs; track tab.chapter) {
+      <a
+        class="book-tab"
+        [class]="tab.cssClass"
+        [class.active]="activeChapter() === tab.chapter"
+        [attr.aria-current]="activeChapter() === tab.chapter ? 'page' : null"
+        routerLink="/"
+        [queryParams]="chapterParams(tab.chapter)"
+      >
+        {{ tab.label }}
+      </a>
+    }
+  </nav>
 
-  <div class="book-page left-page" #leftPage (scroll)="onScroll(leftPage)" (mousemove)="onMouseMove($event, leftPage)" (mouseleave)="onMouseLeave(leftPage)"appScrollParticles>
-    <h2>Chroniques</h2>
-    <p>
-      Ceci est la page gauche du grimoire. Le contenu sera bientôt dynamique.
-    </p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
+  <div class="book-page left-page" #leftPage (scroll)="onScroll(leftPage)" (mousemove)="onMouseMove($event, leftPage)" (mouseleave)="onMouseLeave(leftPage)" appScrollParticles>
+    @if (world(); as world) {
+      <h2>{{ world.name }}</h2>
+      <p>{{ world.summary }}</p>
+      @if (entry()?.id !== world.id) {
+        <p><a class="chapter-link" [routerLink]="linkFor(world).commands">Lire la fiche du monde</a></p>
+      }
+    } @else {
+      <h2>Chroniques</h2>
+      <p>Le monde attend encore d’être écrit. Publiez une fiche « Monde » pour ouvrir ce grimoire.</p>
+    }
+
+    <h3 class="chapter-heading">Chapitres du Lore</h3>
+    <ul class="chapter-list">
+      @for (category of categories; track category.id) {
+        <li>
+          <a
+            class="chapter-link"
+            [class.active]="activeChapter() === category.id"
+            [attr.aria-current]="!entryId() && activeChapter() === category.id ? 'page' : null"
+            routerLink="/"
+            [queryParams]="chapterParams(category.id)"
+          >
+            {{ category.label }}
+          </a>
+        </li>
+      }
+    </ul>
   </div>
 
   <div class="book-page right-page" #rightPage (scroll)="onScroll(rightPage)" (mousemove)="onMouseMove($event, rightPage)" (mouseleave)="onMouseLeave(rightPage)" appScrollParticles>
     <div class="right-page-content">
-      <h2>Archives</h2>
-      <p>
-        Ceci est la page droite du grimoire. Ici viendront les factions, lieux, héros et légendes.
-      </p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere blanditiis reprehenderit ea sed ex repellendus voluptatibus, corrupti omnis cumque minus, voluptatem aliquid a quas, ullam laudantium. Aperiam vitae nobis totam.</p>
+      @if (entryId()) {
+        @if (!loaded()) {
+          <p>Le grimoire s’ouvre…</p>
+        } @else if (entry(); as entry) {
+          <article class="lore-entry" aria-labelledby="lore-entry-title">
+            @if (breadcrumb().length > 1) {
+              <app-lore-breadcrumb [trail]="breadcrumb()" [linkFor]="linkFor" />
+            }
+            <h2 id="lore-entry-title">{{ entry.name }}</h2>
+            <p class="lore-card-type">{{ entry.type }}</p>
+            @if (entry.summary) {
+              <p class="lore-entry-summary">{{ entry.summary }}</p>
+            }
+            @for (paragraph of entryParagraphs(); track $index) {
+              <p class="lore-entry-text">{{ paragraph }}</p>
+            }
+
+            <h3 class="chapter-heading">Liens du Lore</h3>
+            <app-lore-relation-links [links]="relationLinks()" [linkFor]="linkFor" />
+          </article>
+        } @else {
+          <h2>Fiche introuvable</h2>
+          <p>Cette page du grimoire n’existe pas ou n’a pas encore été publiée.</p>
+          <p><a class="chapter-link" routerLink="/" [queryParams]="homeParams">Revenir à l’accueil du grimoire</a></p>
+        }
+      } @else if (activeCategory(); as category) {
+        <h2>{{ category.label }}</h2>
+        @for (entry of categoryEntries(); track entry.id) {
+          <article class="lore-card">
+            <h3><a [routerLink]="linkFor(entry).commands">{{ entry.name }}</a></h3>
+            <p class="lore-card-type">{{ entry.type }}</p>
+            <p>{{ entry.summary }}</p>
+          </article>
+        } @empty {
+          <p>Aucune fiche publiée dans ce chapitre pour l’instant.</p>
+        }
+      } @else if (activeChapter() === 'magie') {
+        <h2>Magie</h2>
+        <p>Ce chapitre du grimoire reste à écrire.</p>
+      } @else {
+        <h2>Archives</h2>
+        @for (paragraph of worldParagraphs(); track $index) {
+          <p>{{ paragraph }}</p>
+        } @empty {
+          <p>Ici viendront les factions, lieux, héros et légendes.</p>
+        }
+      }
     </div>
   </div>
 </div>

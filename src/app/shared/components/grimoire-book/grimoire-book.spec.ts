@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { GrimoireBook } from './grimoire-book';
+import { LocalStorageLoreRepository } from '../../../core/data/local-storage-lore-repository';
+import { LoreRepository } from '../../../core/data/lore-repository';
 
 describe('GrimoireBook', () => {
   let component: GrimoireBook;
@@ -8,7 +11,11 @@ describe('GrimoireBook', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GrimoireBook]
+      imports: [GrimoireBook],
+      providers: [
+        provideRouter([]),
+        { provide: LoreRepository, useClass: LocalStorageLoreRepository }
+      ]
     })
     .compileComponents();
 

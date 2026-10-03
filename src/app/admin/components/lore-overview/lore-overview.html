@@ -1,0 +1,73 @@
+<section aria-labelledby="overview-stats-title">
+  <h2 id="overview-stats-title" class="visually-hidden">Compteurs</h2>
+  <ul class="admin-stats">
+    <li class="admin-stat">
+      <span class="admin-stat-value">{{ stats().total }}</span>
+      <span class="admin-stat-label">Fiches</span>
+    </li>
+    <li class="admin-stat">
+      <span class="admin-stat-value">{{ stats().published }}</span>
+      <span class="admin-stat-label">Publiées</span>
+    </li>
+    <li class="admin-stat">
+      <span class="admin-stat-value">{{ stats().drafts }}</span>
+      <span class="admin-stat-label">Brouillons</span>
+    </li>
+    <li class="admin-stat">
+      <span class="admin-stat-value">{{ stats().relations }}</span>
+      <span class="admin-stat-label">
+        Relations ({{ stats().hierarchicalRelations }} hiérarchiques,
+        {{ stats().associatedRelations }} associées)
+      </span>
+    </li>
+  </ul>
+</section>
+
+<div class="admin-grid">
+  <section class="admin-panel" aria-labelledby="overview-types-title">
+    <div class="admin-panel-header">
+      <h2 id="overview-types-title">Fiches par type</h2>
+    </div>
+    @if (countsByType().length > 0) {
+      <ul class="admin-type-counts">
+        @for (item of countsByType(); track item.type) {
+          <li>
+            <span>{{ item.type }}</span>
+            <span class="admin-badge">{{ item.count }}</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="admin-empty">Aucune fiche pour le moment.</p>
+    }
+  </section>
+
+  <section class="admin-panel" aria-labelledby="overview-recent-title">
+    <div class="admin-panel-header">
+      <h2 id="overview-recent-title">Dernières modifications</h2>
+      <a class="admin-btn admin-btn-primary" routerLink="/admin" [queryParams]="newEntryParams">
+        Créer une fiche
+      </a>
+    </div>
+    @if (recentEntries().length > 0) {
+      <ul class="admin-recent">
+        @for (entry of recentEntries(); track entry.id) {
+          @let target = linkFor(entry);
+          <li>
+            <a [routerLink]="target.commands" [queryParams]="target.queryParams">{{ entry.name }}</a>
+            <span class="admin-muted">{{ entry.type }}</span>
+            <span
+              class="admin-badge"
+              [class.admin-badge-published]="entry.status === 'Publié'"
+              [class.admin-badge-draft]="entry.status === 'Brouillon'"
+            >
+              {{ entry.status }}
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="admin-empty">Aucune fiche pour le moment.</p>
+    }
+  </section>
+</div>

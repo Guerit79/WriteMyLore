@@ -1,0 +1,110 @@
+<div class="admin-grid">
+  <section class="admin-panel" aria-labelledby="relations-new-title">
+    <div class="admin-panel-header">
+      <h2 id="relations-new-title">Nouvelle relation</h2>
+    </div>
+    <app-lore-relation-form />
+  </section>
+
+  <section class="admin-panel" aria-labelledby="relations-rules-title">
+    <div class="admin-panel-header">
+      <h2 id="relations-rules-title">Règles du fil d’Ariane</h2>
+    </div>
+    <p>Seules ces relations construisent la hiérarchie (et donc le fil d’Ariane) :</p>
+    <ul class="admin-rules">
+      @for (rule of rules; track rule.relationType) {
+        <li>
+          <strong>« {{ rule.relationType }} »</strong> depuis une fiche
+          {{ rule.sourceTypes.join(', ') }}
+        </li>
+      }
+    </ul>
+    <p class="admin-hint">
+      Les autres relations (« possède », « participe à », « dirige »…) sont des relations associées :
+      elles sont affichées sur la fiche, sans entrer dans le fil d’Ariane.
+    </p>
+  </section>
+</div>
+
+<section class="admin-panel" aria-labelledby="relations-list-title">
+  <div class="admin-panel-header">
+    <h2 id="relations-list-title">Toutes les relations</h2>
+    <div class="admin-field admin-field-inline">
+      <label for="relations-kind">Nature</label>
+      <select id="relations-kind" class="admin-input" [formControl]="kindControl">
+        <option value="all">Toutes</option>
+        <option value="hierarchical">Hiérarchiques</option>
+        <option value="associated">Associées</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="admin-hint" aria-live="polite">
+    {{ relations().length }} relation(s) affichée(s) sur {{ total() }}.
+  </p>
+  @if (feedback(); as fb) {
+    <p
+      class="admin-alert"
+      [class.admin-alert-error]="fb.kind === 'error'"
+      [class.admin-alert-success]="fb.kind === 'success'"
+      [attr.role]="fb.kind === 'error' ? 'alert' : 'status'"
+    >
+      {{ fb.message }}
+    </p>
+  }
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <caption class="visually-hidden">Relations entre les fiches du Lore</caption>
+      <thead>
+        <tr>
+          <th scope="col">Source</th>
+          <th scope="col">Relation</th>
+          <th scope="col">Cible</th>
+          <th scope="col">Nature</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (view of relations(); track view.relation.id) {
+          @let source = linkFor(view.source);
+          @let target = linkFor(view.target);
+          <tr>
+            <td>
+              <a [routerLink]="source.commands" [queryParams]="source.queryParams">{{ view.source.name }}</a>
+              <span class="admin-muted"> · {{ view.source.type }}</span>
+            </td>
+            <td><em>{{ view.relation.type }}</em></td>
+            <td>
+              <a [routerLink]="target.commands" [queryParams]="target.queryParams">{{ view.target.name }}</a>
+              <span class="admin-muted"> · {{ view.target.type }}</span>
+            </td>
+            <td>
+              <span
+                class="admin-badge"
+                [class.admin-badge-hierarchical]="view.hierarchical"
+                [class.admin-badge-associated]="!view.hierarchical"
+              >
+                {{ view.hierarchical ? 'Hiérarchique' : 'Associée' }}
+              </span>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="admin-btn admin-btn-ghost-danger admin-btn-small"
+                [attr.aria-label]="'Supprimer la relation ' + view.source.name + ' ' + view.relation.type + ' ' + view.target.name"
+                (click)="remove(view)"
+              >
+                Supprimer
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="admin-empty">Aucune relation à afficher.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

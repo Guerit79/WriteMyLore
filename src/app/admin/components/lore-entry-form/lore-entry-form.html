@@ -1,0 +1,105 @@
+<form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (submitted() && form.invalid) {
+    <p class="admin-alert admin-alert-error" role="alert">
+      La fiche n’a pas été enregistrée : corrigez les champs signalés.
+    </p>
+  }
+
+  <div class="admin-field">
+    <label [for]="id + '-name'">Nom <span class="admin-required">(obligatoire)</span></label>
+    <input
+      [id]="id + '-name'"
+      class="admin-input"
+      type="text"
+      formControlName="name"
+      autocomplete="off"
+      [attr.maxlength]="nameMaxLength"
+      [attr.aria-invalid]="showError('name')"
+      [attr.aria-describedby]="errorId('name')"
+    />
+    @if (showError('name')) {
+      <p class="admin-error" [id]="errorId('name')">
+        @if (form.controls.name.hasError('maxlength')) {
+          Le nom ne doit pas dépasser {{ nameMaxLength }} caractères.
+        } @else {
+          Le nom est obligatoire.
+        }
+      </p>
+    }
+  </div>
+
+  <div class="admin-form-row">
+    <div class="admin-field">
+      <label [for]="id + '-type'">Type <span class="admin-required">(obligatoire)</span></label>
+      <select
+        [id]="id + '-type'"
+        class="admin-input"
+        formControlName="type"
+        [attr.aria-invalid]="showError('type')"
+        [attr.aria-describedby]="errorId('type')"
+      >
+        <option value="" disabled>Choisir un type…</option>
+        @for (type of types; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+      @if (showError('type')) {
+        <p class="admin-error" [id]="errorId('type')">Le type est obligatoire.</p>
+      }
+    </div>
+
+    <fieldset class="admin-field admin-fieldset">
+      <legend>Statut</legend>
+      <div class="admin-radios">
+        @for (status of statuses; track status) {
+          <label class="admin-radio">
+            <input type="radio" formControlName="status" [value]="status" />
+            {{ status }}
+          </label>
+        }
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="admin-field">
+    <label [for]="id + '-summary'">Résumé</label>
+    <textarea
+      [id]="id + '-summary'"
+      class="admin-input"
+      rows="3"
+      formControlName="summary"
+      [attr.aria-invalid]="showError('summary')"
+      [attr.aria-describedby]="(errorId('summary') ?? '') + ' ' + id + '-summary-hint'"
+    ></textarea>
+    <p class="admin-hint" [id]="id + '-summary-hint'">
+      Quelques phrases affichées dans les listes ({{ form.controls.summary.value.length }} /
+      {{ summaryMaxLength }} caractères).
+    </p>
+    @if (showError('summary')) {
+      <p class="admin-error" [id]="errorId('summary')">
+        Le résumé ne doit pas dépasser {{ summaryMaxLength }} caractères.
+      </p>
+    }
+  </div>
+
+  <div class="admin-field">
+    <label [for]="id + '-content'">Contenu détaillé</label>
+    <textarea
+      [id]="id + '-content'"
+      class="admin-input admin-input-long"
+      rows="10"
+      formControlName="content"
+      [attr.aria-describedby]="id + '-content-hint'"
+    ></textarea>
+    <p class="admin-hint" [id]="id + '-content-hint'">
+      Séparez les paragraphes par une ligne vide.
+    </p>
+  </div>
+
+  <div class="admin-form-actions">
+    <button type="submit" class="admin-btn admin-btn-primary">{{ submitLabel() }}</button>
+    <button type="button" class="admin-btn admin-btn-ghost" (click)="cancelled.emit()">
+      Annuler
+    </button>
+  </div>
+</form>

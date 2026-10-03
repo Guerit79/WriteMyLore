@@ -1,0 +1,125 @@
+.admin-shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(180deg, rgba(212, 168, 67, 0.08), transparent 30%),
+    #1d130b;
+  border-right: 1px solid rgba(212, 168, 67, 0.25);
+  color: #ead7ae;
+}
+
+.admin-brand {
+  margin: 0;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.2rem;
+  color: #e3b964;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  color: #ead7ae;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.admin-nav-link:hover {
+  background: rgba(212, 168, 67, 0.1);
+}
+
+.admin-nav-link.active {
+  background: rgba(212, 168, 67, 0.18);
+  border-left-color: #e3b964;
+  color: #fff3d6;
+}
+
+.admin-nav-link:focus-visible {
+  outline: 2px solid #f0c860;
+  outline-offset: 2px;
+}
+
+.admin-nav-icon {
+  width: 1.2em;
+  text-align: center;
+  color: #e3b964;
+}
+
+.admin-nav-back {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212, 168, 67, 0.2);
+}
+
+.admin-sidebar-note {
+  margin: auto 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #c9b48a;
+}
+
+.admin-main {
+  min-width: 0;
+  padding: 32px clamp(16px, 3vw, 40px) 48px;
+}
+
+@media (max-width: 860px) {
+  .admin-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    gap: 12px;
+    padding: 16px;
+    border-right: none;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+  }
+
+  .admin-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .admin-nav-back {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .admin-sidebar-note {
+    margin: 0;
+  }
+
+  .admin-main {
+    padding-top: 24px;
+  }
+}

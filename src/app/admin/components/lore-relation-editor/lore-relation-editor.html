@@ -1,0 +1,29 @@
+<section class="admin-subsection" aria-labelledby="relation-editor-breadcrumb">
+  <h3 id="relation-editor-breadcrumb">Fil d’Ariane</h3>
+  <app-lore-breadcrumb [trail]="breadcrumb()" [linkFor]="linkFor" />
+  @if (breadcrumb().length === 1) {
+    <p class="admin-hint">
+      Aucun parent hiérarchique. Ajoutez une relation « se trouve dans » (lieux) ou « appartient à »
+      (races, factions, clans, personnages) pour situer cette fiche.
+    </p>
+  }
+</section>
+
+<section class="admin-subsection" aria-labelledby="relation-editor-links">
+  <h3 id="relation-editor-links">Relations</h3>
+  @if (error(); as message) {
+    <p class="admin-alert admin-alert-error" role="alert">{{ message }}</p>
+  }
+  <app-lore-relation-links
+    [links]="links()"
+    [linkFor]="linkFor"
+    [removable]="true"
+    (remove)="removeRelation($event)"
+  />
+</section>
+
+<section class="admin-subsection" aria-labelledby="relation-editor-add">
+  <h3 id="relation-editor-add">Ajouter une relation</h3>
+  <p class="admin-hint">Les relations sont enregistrées immédiatement.</p>
+  <app-lore-relation-form [sourceId]="entry().id" />
+</section>

@@ -1,11 +1,5 @@
 <main class="home-page">
-  @if (!isBookOpen()) {
-    <app-grimoire-cover (openBook)="openGrimoire()" />
-  }
-
-  @if (isBookOpen()) {
-  <app-grimoire-book [chapter]="chapitre()" />
-}
+  <app-grimoire-book [entryId]="id()" />
 
   <!-- Accès discret à l'administration (non sécurisé, pas d'authentification pour l'instant) -->
   <a class="admin-access" routerLink="/admin" aria-label="Accéder à l’administration" title="Administration">

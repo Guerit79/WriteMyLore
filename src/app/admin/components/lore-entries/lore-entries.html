@@ -1,0 +1,178 @@
+@if (feedback(); as fb) {
+  <p
+    class="admin-alert"
+    [class.admin-alert-error]="fb.kind === 'error'"
+    [class.admin-alert-success]="fb.kind === 'success'"
+    [attr.role]="fb.kind === 'error' ? 'alert' : 'status'"
+  >
+    {{ fb.message }}
+  </p>
+}
+
+<div class="admin-split" [class.has-editor]="editorOpen()">
+  <section class="admin-panel" aria-labelledby="entries-title">
+    <div class="admin-panel-header">
+      <h2 id="entries-title">Fiches du Lore</h2>
+      <a class="admin-btn admin-btn-primary" routerLink="/admin" [queryParams]="newEntryParams">
+        Nouvelle fiche
+      </a>
+    </div>
+
+    <form class="admin-toolbar" [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
+      <div class="admin-field">
+        <label for="entries-search">Rechercher par nom</label>
+        <input
+          id="entries-search"
+          class="admin-input"
+          type="search"
+          formControlName="search"
+          placeholder="Ex. Ulrick"
+          autocomplete="off"
+        />
+      </div>
+      <div class="admin-field">
+        <label for="entries-type">Type</label>
+        <select id="entries-type" class="admin-input" formControlName="type">
+          <option value="">Tous les types</option>
+          @for (type of types; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="entries-status">Statut</label>
+        <select id="entries-status" class="admin-input" formControlName="status">
+          <option value="">Tous les statuts</option>
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </div>
+    </form>
+
+    <p class="admin-hint" aria-live="polite">
+      {{ filteredEntries().length }} fiche(s) affichée(s) sur {{ total() }}.
+    </p>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <caption class="visually-hidden">Liste des fiches du Lore</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Type</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of filteredEntries(); track entry.id) {
+            @let target = linkFor(entry);
+            <tr [class.is-selected]="entry.id === editedId()">
+              <th scope="row">
+                <a [routerLink]="target.commands" [queryParams]="target.queryParams">{{ entry.name }}</a>
+              </th>
+              <td>{{ entry.type }}</td>
+              <td>
+                <span
+                  class="admin-badge"
+                  [class.admin-badge-published]="entry.status === 'Publié'"
+                  [class.admin-badge-draft]="entry.status === 'Brouillon'"
+                >
+                  {{ entry.status }}
+                </span>
+              </td>
+              <td>
+                <div class="admin-actions">
+                  @if (pendingDeleteId() === entry.id) {
+                    <span class="admin-confirm" role="group" [attr.aria-label]="'Confirmer la suppression de ' + entry.name">
+                      <span>Supprimer « {{ entry.name }} » et ses relations ?</span>
+                      <button type="button" class="admin-btn admin-btn-danger admin-btn-small" (click)="remove(entry)">
+                        Confirmer
+                      </button>
+                      <button type="button" class="admin-btn admin-btn-ghost admin-btn-small" (click)="pendingDeleteId.set(null)">
+                        Annuler
+                      </button>
+                    </span>
+                  } @else {
+                    <a
+                      class="admin-btn admin-btn-small"
+                      [routerLink]="target.commands"
+                      [queryParams]="target.queryParams"
+                      [attr.aria-label]="'Modifier ' + entry.name"
+                    >
+                      Modifier
+                    </a>
+                    <button
+                      type="button"
+                      class="admin-btn admin-btn-small"
+                      [attr.aria-label]="(entry.status === 'Publié' ? 'Mettre en brouillon ' : 'Publier ') + entry.name"
+                      (click)="toggleStatus(entry)"
+                    >
+                      {{ entry.status === 'Publié' ? 'Mettre en brouillon' : 'Publier' }}
+                    </button>
+                    <button
+                      type="button"
+                      class="admin-btn admin-btn-ghost-danger admin-btn-small"
+                      [attr.aria-label]="'Supprimer ' + entry.name"
+                      (click)="pendingDeleteId.set(entry.id)"
+                    >
+                      Supprimer
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="admin-empty">Aucune fiche ne correspond à ces critères.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (editorOpen()) {
+    <section class="admin-panel admin-editor" aria-labelledby="editor-title">
+      <div class="admin-panel-header">
+        <h2 id="editor-title">
+          @if (isCreating()) {
+            Nouvelle fiche
+          } @else if (editedEntry(); as entry) {
+            Modifier « {{ entry.name }} »
+          } @else {
+            Fiche introuvable
+          }
+        </h2>
+        @if (editedEntry(); as entry) {
+          @if (entry.status === 'Publié') {
+            <a class="admin-btn admin-btn-ghost admin-btn-small" [routerLink]="['/lore', entry.id]">
+              Voir la page publique
+            </a>
+          }
+        }
+        <button type="button" class="admin-btn admin-btn-ghost admin-btn-small" (click)="closeEditor()">
+          Fermer l’éditeur
+        </button>
+      </div>
+
+      @if (isCreating() || editedEntry()) {
+        <app-lore-entry-form
+          [entry]="editedEntry()"
+          [submitLabel]="isCreating() ? 'Créer la fiche' : 'Enregistrer les modifications'"
+          (save)="save($event)"
+          (cancelled)="closeEditor()"
+        />
+      } @else {
+        <p class="admin-empty">Cette fiche n’existe pas ou a été supprimée.</p>
+      }
+
+      @if (editedEntry(); as entry) {
+        <app-lore-relation-editor [entry]="entry" />
+      } @else if (isCreating()) {
+        <p class="admin-hint">Enregistrez d’abord la fiche pour pouvoir lui ajouter des relations.</p>
+      }
+    </section>
+  }
+</div>

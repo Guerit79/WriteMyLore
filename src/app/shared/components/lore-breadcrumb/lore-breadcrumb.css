@@ -1,0 +1,25 @@
+.lore-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lore-breadcrumb li + li::before {
+  content: '›';
+  margin-right: 4px;
+  opacity: 0.7;
+}
+
+.lore-breadcrumb a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lore-breadcrumb [aria-current='page'] {
+  font-weight: 700;
+}

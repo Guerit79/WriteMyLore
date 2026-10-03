@@ -1,14 +1,56 @@
 /* ICI CONTAINER DU LIVRE (contener global) ICI POUR MODIFIER L'ARRIERE PLANS */
 .home-page {
+  box-sizing: border-box;
   min-height: 100vh;
+  min-height: 100dvh;
+  /* Fenêtre plus étroite que la couverture : la page s'élargit (défilement) au lieu de la couper. */
+  min-width: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
   background: #080402;
+  /* Seuls les effets décoratifs qui dépassent (halo de la couverture) sont rognés :
+     le contenu agrandit le conteneur, il n'est donc jamais coupé. */
+  overflow: hidden;
+  overflow: clip;
 }
 
 .opened-placeholder {
   color: #d9aa58;
   font-family: serif;
   font-size: 32px;
+}
+/* ACCES DISCRET A L'ADMINISTRATION (bas gauche, hors du flux du grimoire) */
+.admin-access {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 30;
+
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(217, 170, 88, 0.25);
+  border-radius: 50%;
+  background: rgba(20, 10, 4, 0.6);
+  color: #d9aa58;
+  font-size: 15px;
+  text-decoration: none;
+
+  opacity: 0.4;
+  transition: opacity 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-access:hover,
+.admin-access:focus-visible {
+  opacity: 1;
+  border-color: rgba(240, 200, 96, 0.7);
+  box-shadow: 0 0 12px rgba(212, 168, 67, 0.35);
+}
+
+.admin-access:focus-visible {
+  outline: 2px solid #f0c860;
+  outline-offset: 3px;
 }

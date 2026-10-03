@@ -1,0 +1,79 @@
+<form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="admin-form-row">
+    @if (!sourceId()) {
+      <div class="admin-field">
+        <label [for]="id + '-source'">Fiche source <span class="admin-required">(obligatoire)</span></label>
+        <select
+          [id]="id + '-source'"
+          class="admin-input"
+          formControlName="sourceId"
+          [attr.aria-invalid]="showError('sourceId')"
+          [attr.aria-describedby]="errorId('sourceId')"
+        >
+          <option value="" disabled>Choisir une fiche…</option>
+          @for (entry of sortedEntries(); track entry.id) {
+            <option [value]="entry.id">{{ entry.name }} ({{ entry.type }})</option>
+          }
+        </select>
+        @if (showError('sourceId')) {
+          <p class="admin-error" [id]="errorId('sourceId')">Choisissez la fiche source.</p>
+        }
+      </div>
+    }
+
+    <div class="admin-field">
+      <label [for]="id + '-type'">Type de relation <span class="admin-required">(obligatoire)</span></label>
+      <select
+        [id]="id + '-type'"
+        class="admin-input"
+        formControlName="type"
+        [attr.aria-invalid]="showError('type')"
+        [attr.aria-describedby]="errorId('type')"
+      >
+        <option value="" disabled>Choisir une relation…</option>
+        @for (type of relationTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+      @if (showError('type')) {
+        <p class="admin-error" [id]="errorId('type')">Choisissez le type de relation.</p>
+      }
+    </div>
+
+    <div class="admin-field">
+      <label [for]="id + '-target'">Fiche cible <span class="admin-required">(obligatoire)</span></label>
+      <select
+        [id]="id + '-target'"
+        class="admin-input"
+        formControlName="targetId"
+        [attr.aria-invalid]="showError('targetId') || showSelfError()"
+        [attr.aria-describedby]="errorId('targetId')"
+      >
+        <option value="" disabled>Choisir une fiche…</option>
+        @for (entry of targetOptions(); track entry.id) {
+          <option [value]="entry.id">{{ entry.name }} ({{ entry.type }})</option>
+        }
+      </select>
+      @if (showError('targetId')) {
+        <p class="admin-error" [id]="errorId('targetId')">Choisissez la fiche cible.</p>
+      }
+    </div>
+  </div>
+
+  @if (showSelfError()) {
+    <p class="admin-error" role="alert">Une fiche ne peut pas être liée à elle-même.</p>
+  }
+  @if (hierarchyHint(); as hint) {
+    <p class="admin-hint">{{ hint }}</p>
+  }
+  @if (error(); as message) {
+    <p class="admin-alert admin-alert-error" role="alert">{{ message }}</p>
+  }
+  @if (success(); as message) {
+    <p class="admin-alert admin-alert-success" role="status">{{ message }}</p>
+  }
+
+  <div class="admin-form-actions">
+    <button type="submit" class="admin-btn admin-btn-primary">Ajouter la relation</button>
+  </div>
+</form>

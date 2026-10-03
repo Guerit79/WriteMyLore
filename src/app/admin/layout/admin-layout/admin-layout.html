@@ -1,0 +1,38 @@
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <p class="admin-brand"><span aria-hidden="true">✒</span> WriteMyLore</p>
+
+    <nav aria-label="Navigation de l’administration">
+      <ul class="admin-nav">
+        @for (section of sections; track section.id) {
+          <li>
+            <a
+              class="admin-nav-link"
+              routerLink="/admin"
+              [queryParams]="section.queryParams"
+              [class.active]="activeSection() === section.id"
+              [attr.aria-current]="activeSection() === section.id ? 'page' : null"
+            >
+              <span class="admin-nav-icon" aria-hidden="true">{{ section.icon }}</span>
+              {{ section.label }}
+            </a>
+          </li>
+        }
+        <li class="admin-nav-back">
+          <a class="admin-nav-link" routerLink="/">
+            <span class="admin-nav-icon" aria-hidden="true">↩</span>
+            Retour au grimoire
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <p class="admin-sidebar-note">
+      Prototype local : les fiches sont enregistrées dans ce navigateur.
+    </p>
+  </aside>
+
+  <main class="admin-main">
+    <router-outlet />
+  </main>
+</div>
