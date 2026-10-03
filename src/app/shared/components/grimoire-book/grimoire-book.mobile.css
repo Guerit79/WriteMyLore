@@ -1,0 +1,172 @@
+/* Conteneur des deux pages : neutre sur grand écran, les pages restent les deux colonnes du livre. */
+.book-spread {
+  display: contents;
+}
+
+/*
+ * PAGE UNIQUE (téléphone, tablette en portrait, fenêtre peu haute).
+ * Seuils mesurés sur la double-page : sous 940px de large, chaque colonne tombe sous ~37 caractères
+ * par ligne ; sous 650px de haut, une page n'offre plus que ~9 lignes utiles.
+ * Le contenu reste le même : seule la mise en page change.
+ */
+@media (max-width: 939.98px), (max-height: 649.98px) {
+  /* Reliure de cuir qui porte le bandeau des chapitres et la page. */
+  .grimoire-book {
+    box-sizing: border-box;
+    width: min(46rem, calc(100vw - 16px));
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 10px 8px 8px;
+    border-radius: 12px;
+    background-image: url('/assets/textures/T_Cuir_2.png');
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+      inset 0 0 0 1px rgba(212, 168, 67, 0.35),
+      inset 0 0 24px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Bandeau des chapitres : cousu de fil d'or sur le cuir, en haut du grimoire. */
+  .book-tabs {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(6.25rem, 1fr));
+    gap: 10px 8px;
+    padding: 34px 10px 14px;
+    border: 1px dashed rgba(227, 185, 100, 0.6);
+    border-radius: 8px;
+    pointer-events: auto;
+  }
+
+  .book-tabs::before {
+    content: '✦ Chapitres du grimoire ✦';
+    content: '✦ Chapitres du grimoire ✦' / '';
+    position: absolute;
+    top: 9px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #e3b964;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Signets : mêmes couleurs et matières que les onglets du livre ouvert. */
+  .book-tab,
+  .book-tab:nth-child(n) {
+    position: relative;
+    width: auto;
+    height: auto;
+    min-height: 44px;
+    margin-left: 0;
+    padding: 8px 6px;
+    border-radius: 6px 6px 12px 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    text-align: center;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 235, 170, 0.35),
+      inset 0 -5px 8px rgba(60, 25, 5, 0.28),
+      0 3px 8px rgba(0, 0, 0, 0.55);
+  }
+
+  .book-tab:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Signet actif : liseré doré et sceau ✦, en plus de la couleur. */
+  .book-tab.active {
+    box-shadow:
+      inset 0 0 0 2px #f0c860,
+      0 0 14px rgba(240, 200, 96, 0.45),
+      0 3px 8px rgba(0, 0, 0, 0.55);
+  }
+
+  .book-tab.active::after {
+    content: '✦';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #f0c860;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+  }
+
+  .book-tabs .book-tab:focus-visible {
+    outline: 3px solid #f0c860;
+    outline-offset: 2px;
+  }
+
+  /* Une seule page de parchemin, dans le cadre ornementé du grimoire. */
+  .book-spread {
+    display: flex;
+    flex-direction: column;
+    /* Cadre doré du grimoire, aminci sur les très petits écrans pour laisser la place au texte. */
+    border: clamp(14px, 5vw, 22px) solid transparent;
+    border-image-source: url('/assets/textures/T_Page_2.png');
+    border-image-slice: 80;
+    border-image-width: clamp(14px, 5vw, 22px);
+    border-image-repeat: stretch;
+    /* Texture unique étirée : une répétition verticale laissait des coutures visibles. */
+    background:
+      url('/assets/textures/T_Page_x.png') center / cover no-repeat,
+      #ead9b4;
+    background-clip: padding-box;
+  }
+
+  .book-page,
+  .left-page,
+  .right-page {
+    overflow: visible;
+    direction: ltr;
+    margin: 0;
+    padding: clamp(14px, 4vw, 28px) clamp(10px, 4vw, 32px);
+  }
+
+  /* Contenu du chapitre ou de la fiche d'abord, sommaire du Monde ensuite… */
+  .right-page {
+    order: 1;
+  }
+
+  .left-page {
+    order: 2;
+  }
+
+  /* …sauf à l'accueil, où le Monde et ses chapitres ouvrent le grimoire. */
+  .book-spread.is-home .left-page {
+    order: 0;
+  }
+
+  /* Ornement de séparation au début du second bloc. */
+  .book-spread:not(.is-home) .left-page::before,
+  .book-spread.is-home .right-page::before {
+    content: '❦';
+    display: block;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 22px;
+    color: #8a5a14;
+    background:
+      linear-gradient(#a8844a, #a8844a) left center / 38% 1px no-repeat,
+      linear-gradient(#a8844a, #a8844a) right center / 38% 1px no-repeat;
+  }
+
+  .book-page h2 {
+    margin-top: 0;
+    font-size: clamp(22px, 6.5vw, 28px);
+  }
+
+  .book-page p {
+    font-size: 17px;
+    hyphens: auto;
+  }
+}

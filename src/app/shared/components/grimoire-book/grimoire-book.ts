@@ -45,7 +45,7 @@ function toParagraphs(text: string): string[] {
   standalone: true,
   imports: [ScrollParticlesDirective, RouterLink, LoreBreadcrumb, LoreRelationLinks],
   templateUrl: './grimoire-book.html',
-  styleUrl: './grimoire-book.css',
+  styleUrls: ['./grimoire-book.css', './grimoire-book.mobile.css'],
 })
 
 
@@ -101,6 +101,11 @@ export class GrimoireBook {
     () => this.store.publishedEntries().find((entry) => entry.type === 'Monde') ?? null,
   );
   protected readonly worldParagraphs = computed(() => toParagraphs(this.world()?.content ?? ''));
+
+  /** Accueil du grimoire : sur page unique, le Monde et ses chapitres passent avant les Archives. */
+  protected readonly isHomeView = computed(
+    () => !this.entryId() && this.activeChapter() === HOME_CHAPTER,
+  );
 
   protected readonly activeCategory = computed(
     () => LORE_CATEGORIES.find((category) => category.id === this.activeChapter()) ?? null,

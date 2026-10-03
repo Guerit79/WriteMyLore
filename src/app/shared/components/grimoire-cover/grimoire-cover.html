@@ -1,4 +1,13 @@
-<div  class="grimoire-cover" [class.opening]="isOpening" (click)="open()">
+<div
+  class="grimoire-cover"
+  [class.opening]="isOpening"
+  role="button"
+  tabindex="0"
+  aria-label="Ouvrir le grimoire Write My Lore"
+  (click)="open()"
+  (keydown.enter)="open()"
+  (keydown.space)="$event.preventDefault(); open()"
+>
 
   <div class="cover-content">
 

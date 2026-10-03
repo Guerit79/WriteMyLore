@@ -26,8 +26,12 @@
 }
 
 .grimoire-cover {
-  width: 700px;
+  /* 700px comme avant ; sur petit écran ou fenêtre basse, la couverture rétrécit en entier. */
+  width: min(700px, calc(100vw - 32px), calc(100vh - 32px));
+  width: min(700px, calc(100vw - 32px), calc(100dvh - 32px));
   aspect-ratio: 1 / 1;
+  /* Le texte se dimensionne sur la largeur de la couverture : 1cqi = 7px à 700px. */
+  container-type: inline-size;
 
   position: relative;
 
@@ -86,56 +90,62 @@
 
 .cover-title {
   font-family: "Cinzel Decorative", serif;
-  font-size: 38px;
+  font-size: max(18px, 5.43cqi);
   line-height: 1.15;
   color: #d9aa58;
-  letter-spacing: 2px;
-  margin: 0 0 200px 0;
+  letter-spacing: 0.29cqi;
+  margin: 0 0 28.57cqi 0;
   max-width: 60%;
   text-align: center;
   text-shadow:
     0 3px 4px rgba(0,0,0,0.95),
     0 0 12px rgba(180,120,40,0.22);
-  transform: translateX(45px);
+  transform: translateX(6.43cqi);
 }
 
 .cover-subtitle {
   position: absolute;
-  bottom: 165px;
+  bottom: 23.57cqi;
   font-family: "Cinzel", serif;
-  font-size: 10px;
-  letter-spacing: 4px;
+  font-size: max(8px, 1.43cqi);
+  letter-spacing: 0.57cqi;
   color: rgba(230,190,120,0.72);
   text-align: center;
   max-width: 70%;
   line-height: 1.4;
   text-shadow:
     0 2px 3px rgba(0,0,0,0.95);
-  transform: translateX(45px);
+  transform: translateX(6.43cqi);
     
 }
 
 .cover-hint {
   position: absolute;
 
-  bottom: 85px;
+  bottom: 12.14cqi;
 
   font-family: "Cinzel", serif;
 
-  font-size: 11px;
+  font-size: max(10px, 1.57cqi);
 
-  letter-spacing: 3px;
+  letter-spacing: 0.43cqi;
 
   color: rgba(220,180,120,0.42);
 
   text-shadow:
     0 2px 3px rgba(0,0,0,0.9);
 
-  transform: translateX(45px);
+  transform: translateX(6.43cqi);
 
   /*  SYSTEM D'ANNIMATION VOIR EN BAS DU CSS KEYFRAME */
   animation: hintPulse 2.5s ease-in-out infinite;
 
+}
+
+.grimoire-cover:focus-visible {
+  outline: 3px solid #f0c860;
+  outline-offset: 6px;
+  border-radius: 12px;
 }
 
 .grimoire-cover.opening {

@@ -14,6 +14,9 @@ export class GrimoireCover {
   isOpening = false;
 
   open(): void {
+    if (this.isOpening) {
+      return;
+    }
     this.isOpening = true;
 
     setTimeout(() => {

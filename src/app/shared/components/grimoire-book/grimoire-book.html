@@ -14,6 +14,8 @@
     }
   </nav>
 
+  <!-- Double-page sur grand écran (display: contents) ; page unique sur téléphone. -->
+  <div class="book-spread" [class.is-home]="isHomeView()">
   <div class="book-page left-page" #leftPage (scroll)="onScroll(leftPage)" (mousemove)="onMouseMove($event, leftPage)" (mouseleave)="onMouseLeave(leftPage)" appScrollParticles>
     @if (world(); as world) {
       <h2>{{ world.name }}</h2>
@@ -94,5 +96,6 @@
         }
       }
     </div>
+  </div>
   </div>
 </div>

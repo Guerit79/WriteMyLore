@@ -15,6 +15,14 @@
   overflow: clip;
 }
 
+/* Page unique du grimoire (même seuil que grimoire-book.mobile.css) : la page défile,
+   avec de la place en bas pour le bouton d'administration. */
+@media (max-width: 939.98px), (max-height: 649.98px) {
+  .home-page:has(app-grimoire-book) {
+    padding-block: 12px 64px;
+  }
+}
+
 .opened-placeholder {
   color: #d9aa58;
   font-family: serif;
@@ -53,4 +61,12 @@
 .admin-access:focus-visible {
   outline: 2px solid #f0c860;
   outline-offset: 3px;
+}
+
+/* Page unique : le bouton reste dans la marge du cadre et ne passe pas sur le texte au défilement. */
+@media (max-width: 939.98px), (max-height: 649.98px) {
+  .admin-access {
+    left: 6px;
+    bottom: 6px;
+  }
 }

@@ -1,6 +1,5 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { map } from 'rxjs';
 import { ADMIN_SECTIONS, toAdminSection } from '../../admin-sections';
@@ -18,11 +17,4 @@ export class AdminLayout {
     inject(ActivatedRoute).queryParamMap.pipe(map((params) => toAdminSection(params.get('section')))),
     { initialValue: toAdminSection(null) },
   );
-
-  constructor() {
-    // Viewport mobile limité à l'administration : le grimoire public garde son rendu actuel.
-    const meta = inject(Meta);
-    meta.updateTag({ name: 'viewport', content: 'width=device-width, initial-scale=1' });
-    inject(DestroyRef).onDestroy(() => meta.removeTag("name='viewport'"));
-  }
 }
