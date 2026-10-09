@@ -1,0 +1,188 @@
+<main class="home-page">
+  <!-- Même mise en scène que l'accueil : compte en haut à droite, administration en bas à gauche. -->
+  <app-account-menu />
+
+  <!-- Grimoire ouvert sur le chapitre « Lieux » : index à gauche, carte à droite. -->
+  <app-grimoire-book chapter="geographie" [customPages]="true">
+    <div class="map-index" grimoireLeft>
+      <h2 id="map-title">Carte du monde</h2>
+
+      <nav class="map-breadcrumb" aria-label="Position dans la hiérarchie de la carte">
+        <ol>
+          <li>
+            @if (breadcrumb().length === 0 && activeTypes().size === 0) {
+              <span aria-current="location">Tous les lieux</span>
+            } @else {
+              <button type="button" class="map-link" (click)="showAll()">Tous les lieux</button>
+            }
+          </li>
+          @for (node of breadcrumb(); track node.id; let last = $last) {
+            <li>
+              <span class="map-level">{{ node.level }}</span>{{ ' ' }}
+              @if (last) {
+                <span aria-current="location">{{ node.name }}</span>
+              } @else {
+                <button type="button" class="map-link" (click)="selectNode(node.id)">{{ node.name }}</button>
+              }
+            </li>
+          }
+        </ol>
+      </nav>
+
+      @if (!singlePage()) {
+        <ng-container [ngTemplateOutlet]="placeCard" />
+      }
+
+      <section class="map-index-section" aria-labelledby="map-types-title">
+        <h3 id="map-types-title">Types de lieux</h3>
+        <div class="map-chips">
+          <button type="button" class="map-chip" [attr.aria-pressed]="activeTypes().size === 0" (click)="clearTypes()">
+            Tous les types
+          </button>
+          @for (type of placeTypes(); track type) {
+            @let definition = typeOf(type);
+            <button type="button" class="map-chip" [attr.aria-pressed]="isTypeActive(type)" (click)="toggleType(type)">
+              <span class="map-glyph" [style.--place-color]="definition.color" aria-hidden="true">{{ definition.glyph }}</span>
+              {{ definition.label }}
+            </button>
+          }
+        </div>
+      </section>
+
+      @if (subdivisionLabel(); as label) {
+        <section class="map-index-section" aria-labelledby="map-levels-title">
+          <h3 id="map-levels-title">{{ label }}</h3>
+          <ul class="map-list">
+            @for (item of subdivisions(); track item.node.id) {
+              <li>
+                <button type="button" class="map-list-item" (click)="selectNode(item.node.id)">
+                  <span>{{ item.node.name }}</span>
+                  <span class="map-count">
+                    {{ item.count }}<span class="visually-hidden"> lieu{{ item.count > 1 ? 'x' : '' }}</span>
+                  </span>
+                </button>
+              </li>
+            } @empty {
+              <li class="map-empty">Aucune subdivision.</li>
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="map-index-section" aria-labelledby="map-places-title">
+        <h3 id="map-places-title">Lieux <span class="map-count">{{ visiblePlaces().length }}</span></h3>
+        <ul class="map-list">
+          @for (place of visiblePlaces(); track place.id) {
+            @let definition = typeOf(place.type);
+            <li>
+              <button
+                type="button"
+                class="map-list-item"
+                [attr.aria-pressed]="selectedPlace()?.id === place.id"
+                (click)="selectPlace(place, true)"
+              >
+                <span>
+                  <span class="map-glyph" [style.--place-color]="definition.color" aria-hidden="true">{{ definition.glyph }}</span>
+                  {{ place.name }}
+                </span>
+                <span class="map-list-type">{{ definition.label }}</span>
+              </button>
+            </li>
+          } @empty {
+            <li class="map-empty">
+              Aucun lieu ne correspond.
+              <button type="button" class="map-link" (click)="showAll()">Afficher tous les lieux</button>
+            </li>
+          }
+        </ul>
+      </section>
+
+      @if (borders().length > 0) {
+        <section class="map-index-section" aria-labelledby="map-borders-title">
+          <h3 id="map-borders-title">Royaumes</h3>
+          <label class="map-check">
+            <input type="checkbox" [checked]="showBorders()" (change)="showBorders.set(!showBorders())" />
+            Afficher les frontières
+          </label>
+          <ul class="map-legend">
+            @for (border of borders(); track border.id) {
+              <li>
+                <span class="map-swatch" [style.--border-color]="border.color" aria-hidden="true"></span>
+                @if (borderEntry(border.loreEntryId); as entry) {
+                  <a [routerLink]="loreLink(entry).commands">{{ border.name }}</a>
+                } @else {
+                  {{ border.name }}
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (hasDemoPlaces()) {
+        <p class="map-demo-notice" role="note">
+          <strong>Prototype :</strong> les lieux marqués « exemple » sont fictifs. Les points de la carte
+          sont enregistrés uniquement dans ce navigateur.
+        </p>
+      }
+
+      <p class="visually-hidden" aria-live="polite">{{ announcement() }}</p>
+    </div>
+
+    <div class="map-plate" grimoireRight>
+      <app-world-map
+        [places]="visiblePlaces()"
+        [selectedId]="selectedPlace()?.id ?? null"
+        [borders]="borders()"
+        [bordersVisible]="showBorders()"
+        (placeSelect)="selectPlace($event, false)"
+        (mapClick)="closeCard()"
+      />
+
+      @if (singlePage()) {
+        <ng-container [ngTemplateOutlet]="placeCard" />
+      }
+    </div>
+  </app-grimoire-book>
+
+  <!-- Accès discret à l'administration (non sécurisé, pas d'authentification pour l'instant) -->
+  <a class="admin-access" routerLink="/admin" aria-label="Accéder à l’administration" title="Administration">
+    <span aria-hidden="true">✒&#xFE0E;</span>
+  </a>
+</main>
+
+<ng-template #placeCard>
+  @if (selectedPlace(); as place) {
+    @let definition = typeOf(place.type);
+    <aside class="map-card" aria-labelledby="map-card-title" (keydown.escape)="closeCard()">
+      <button type="button" class="map-card-close" aria-label="Fermer la fiche du lieu" (click)="closeCard()">
+        <span aria-hidden="true">✕</span>
+      </button>
+      <p class="map-card-type">
+        <span class="map-glyph" [style.--place-color]="definition.color" aria-hidden="true">{{ definition.glyph }}</span>
+        {{ definition.label }}
+        @if (place.demo) {
+          <span class="map-tag">exemple</span>
+        }
+      </p>
+      <h3 id="map-card-title">{{ place.name }}</h3>
+      @if (pathLabel(); as path) {
+        <p class="map-card-path">{{ path }}</p>
+      }
+      @if (place.description) {
+        <p>{{ place.description }}</p>
+      }
+      @if (selectedLoreEntries().length > 0) {
+        <ul class="map-card-links">
+          @for (entry of selectedLoreEntries(); track entry.id) {
+            <li>
+              <a class="map-card-link" [routerLink]="loreLink(entry).commands">Lire la fiche « {{ entry.name }} »</a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="map-card-demo">Aucune fiche publiée n’est encore reliée à ce lieu.</p>
+      }
+    </aside>
+  }
+</ng-template>

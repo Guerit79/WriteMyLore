@@ -1,4 +1,5 @@
-<div class="grimoire-book">
+<div class="grimoire-book" [class.is-custom]="customPages()">
+  @if (showTabs()) {
   <nav class="book-tabs side-tabs" aria-label="Chapitres du grimoire">
     @for (tab of tabs; track tab.chapter) {
       <a
@@ -13,10 +14,14 @@
       </a>
     }
   </nav>
+  }
 
   <!-- Double-page sur grand écran (display: contents) ; page unique sur téléphone. -->
   <div class="book-spread" [class.is-home]="isHomeView()">
   <div class="book-page left-page" #leftPage (scroll)="onScroll(leftPage)" (mousemove)="onMouseMove($event, leftPage)" (mouseleave)="onMouseLeave(leftPage)" appScrollParticles>
+    @if (customPages()) {
+      <ng-content select="[grimoireLeft]" />
+    } @else {
     @if (world(); as world) {
       <h2>{{ world.name }}</h2>
       <p>{{ world.summary }}</p>
@@ -44,11 +49,15 @@
         </li>
       }
     </ul>
+    <p><a class="chapter-link" routerLink="/carte">🗺 Carte du monde</a></p>
+    }
   </div>
 
   <div class="book-page right-page" #rightPage (scroll)="onScroll(rightPage)" (mousemove)="onMouseMove($event, rightPage)" (mouseleave)="onMouseLeave(rightPage)" appScrollParticles>
     <div class="right-page-content">
-      @if (entryId()) {
+      @if (customPages()) {
+        <ng-content select="[grimoireRight]" />
+      } @else if (entryId()) {
         @if (!loaded()) {
           <p>Le grimoire s’ouvre…</p>
         } @else if (entry(); as entry) {
@@ -75,6 +84,9 @@
         }
       } @else if (activeCategory(); as category) {
         <h2>{{ category.label }}</h2>
+        @if (category.id === 'geographie') {
+          <p><a class="chapter-link" routerLink="/carte">Situer les lieux sur la carte du monde</a></p>
+        }
         @for (entry of categoryEntries(); track entry.id) {
           <article class="lore-card">
             <h3><a [routerLink]="linkFor(entry).commands">{{ entry.name }}</a></h3>

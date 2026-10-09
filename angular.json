@@ -27,7 +27,12 @@
             "styles": [
               "src/styles.css",
               "src/admin.css",
-              "src/account.css"
+              "src/account.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/map.css"
+            ],
+            "allowedCommonJsDependencies": [
+              "leaflet"
             ]
           },
           "configurations": {
@@ -86,7 +91,9 @@
             "styles": [
               "src/styles.css",
               "src/admin.css",
-              "src/account.css"
+              "src/account.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/map.css"
             ]
           }
         }

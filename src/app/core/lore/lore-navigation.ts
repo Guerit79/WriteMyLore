@@ -19,7 +19,7 @@ export interface HierarchicalRelationRule {
 }
 
 export const HIERARCHICAL_RELATION_RULES: readonly HierarchicalRelationRule[] = [
-  { relationType: 'se trouve dans', sourceTypes: ['Géographie', 'Continent', 'Région', 'Lieu'] },
+  { relationType: 'se trouve dans', sourceTypes: ['Géographie', 'Continent', 'Royaume', 'Région', 'Lieu'] },
   { relationType: 'appartient à', sourceTypes: ['Race', 'Faction', 'Clan', 'Personnage'] },
 ];
 

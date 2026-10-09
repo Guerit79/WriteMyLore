@@ -7,6 +7,7 @@ export const LORE_ENTRY_TYPES = [
   'Monde',
   'Géographie',
   'Continent',
+  'Royaume',
   'Région',
   'Lieu',
   'Race',
@@ -74,7 +75,7 @@ export interface LoreCategory {
 }
 
 export const LORE_CATEGORIES: readonly LoreCategory[] = [
-  { id: 'geographie', label: 'Géographie', types: ['Géographie', 'Continent', 'Région', 'Lieu'] },
+  { id: 'geographie', label: 'Géographie', types: ['Géographie', 'Continent', 'Royaume', 'Région', 'Lieu'] },
   { id: 'peuples', label: 'Peuples et races', types: ['Race', 'Culture'] },
   { id: 'factions', label: 'Factions', types: ['Faction', 'Clan'] },
   { id: 'histoire', label: 'Histoire', types: ['Événement', 'Histoire'] },

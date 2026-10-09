@@ -1,0 +1,56 @@
+<div class="world-map">
+  <!-- Commandes au-dessus de l'image : aucun bouton ne masque un détail de la carte. -->
+  <div class="world-map-toolbar">
+    <ng-content select="[mapToolbarStart]" />
+
+    <div class="world-map-zoom" role="group" aria-label="Zoom de la carte">
+      <button
+        type="button"
+        class="world-map-control"
+        aria-label="Zoomer"
+        title="Zoomer"
+        [disabled]="zoom() >= maxZoom"
+        (click)="zoomIn()"
+      >
+        <span aria-hidden="true">+</span>
+      </button>
+      <button
+        type="button"
+        class="world-map-control"
+        aria-label="Dézoomer"
+        title="Dézoomer"
+        [disabled]="zoom() <= minZoom()"
+        (click)="zoomOut()"
+      >
+        <span aria-hidden="true">−</span>
+      </button>
+      <button type="button" class="world-map-control world-map-control-wide" title="Vue d’ensemble" (click)="resetView()">
+        <span aria-hidden="true">⟲</span>{{ ' ' }}<span class="world-map-label">Vue d’ensemble</span>
+      </button>
+    </div>
+
+    <ng-content select="[mapToolbarEnd]" />
+  </div>
+
+  <div class="world-map-viewport">
+    <div
+      #canvas
+      class="world-map-canvas"
+      [class.is-placing]="placing()"
+      [class.places-hidden]="!placesVisible()"
+      [class.places-locked]="!placesInteractive()"
+      [style.aspect-ratio]="aspectRatio"
+      role="region"
+      aria-roledescription="carte"
+      aria-label="Carte du monde. Flèches pour se déplacer, touches plus et moins pour zoomer, Tab pour parcourir les lieux."
+    ></div>
+
+    @if (imageState() !== 'loaded') {
+      <p class="world-map-status" [attr.role]="imageState() === 'error' ? 'alert' : 'status'">
+        {{ imageState() === 'error' ? 'L’illustration de la carte n’a pas pu être chargée.' : 'Chargement de la carte…' }}
+      </p>
+    }
+
+    <ng-content select="[mapOverlay]" />
+  </div>
+</div>

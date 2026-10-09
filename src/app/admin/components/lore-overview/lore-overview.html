@@ -70,4 +70,21 @@
       <p class="admin-empty">Aucune fiche pour le moment.</p>
     }
   </section>
+
+  <section class="admin-panel" aria-labelledby="overview-map-title">
+    <div class="admin-panel-header">
+      <h2 id="overview-map-title">Carte du monde</h2>
+      <a class="admin-btn admin-btn-primary" routerLink="/admin/carte">Ouvrir l’éditeur de carte</a>
+    </div>
+    <ul class="admin-type-counts">
+      <li><span>Points sur la carte</span><span class="admin-badge">{{ mapStats().places }}</span></li>
+      <li><span>Fiches placées</span><span class="admin-badge">{{ mapStats().placed }}</span></li>
+      <li><span>Fiches sans lieu</span><span class="admin-badge">{{ mapStats().unplaced }}</span></li>
+    </ul>
+    <p class="admin-hint">
+      Placez les fiches sur la carte, choisissez le type de chaque point et regroupez plusieurs fiches
+      sur un même lieu.
+    </p>
+    <a class="admin-btn admin-btn-ghost admin-btn-small" routerLink="/carte">Voir la carte publique</a>
+  </section>
 </div>

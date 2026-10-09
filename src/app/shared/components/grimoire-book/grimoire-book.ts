@@ -12,6 +12,9 @@ import {
 import { LoreStore } from '../../../core/services/lore-store';
 import { HOME_CHAPTER, chapterQueryParams, publicEntryLink } from '../../../public/public-links';
 
+/** Seuil de la page unique (même valeur que grimoire-book.mobile.css). */
+export const GRIMOIRE_SINGLE_PAGE_QUERY = '(max-width: 939.98px), (max-height: 649.98px)';
+
 interface GrimoireTab {
   chapter: string;
   label: string;
@@ -54,6 +57,13 @@ export class GrimoireBook {
   readonly chapter = input<string>();
   /** Fiche à afficher (`/lore/:id`) : prioritaire sur le chapitre. */
   readonly entryId = input<string>();
+  /**
+   * Pages fournies par le parent (`[grimoireLeft]`, `[grimoireRight]`) au lieu du sommaire et du
+   * chapitre : même livre, autre contenu (ex. la carte). Sans effet sur l'affichage par défaut.
+   */
+  readonly customPages = input(false);
+  /** Onglets des chapitres (masqués dans l'éditeur de carte, qui n'est pas une page publique). */
+  readonly showTabs = input(true);
 
   private timers = new Map<HTMLElement, ReturnType<typeof setTimeout>>();
   private hoveredElements = new Set<HTMLElement>();
@@ -104,7 +114,7 @@ export class GrimoireBook {
 
   /** Accueil du grimoire : sur page unique, le Monde et ses chapitres passent avant les Archives. */
   protected readonly isHomeView = computed(
-    () => !this.entryId() && this.activeChapter() === HOME_CHAPTER,
+    () => !this.customPages() && !this.entryId() && this.activeChapter() === HOME_CHAPTER,
   );
 
   protected readonly activeCategory = computed(

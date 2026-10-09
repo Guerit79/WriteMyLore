@@ -1,0 +1,1132 @@
+/*
+ * Carte du monde (/carte), éditeur de carte (/admin/carte) et composant <app-world-map>.
+ * Les deux pages sont présentées dans le grimoire de l'accueil (<app-grimoire-book [customPages]>) :
+ * page de gauche = index ou éditeur, page de droite = la carte. Les règles « .grimoire-book.is-custom »
+ * ne concernent que ce mode : les autres pages du grimoire ne sont pas modifiées.
+ * Tout le reste est préfixé « map- » ou « world-map- ». `leaflet.css` est chargé juste avant ce fichier.
+ */
+
+/* ===== Mise en page dans le grimoire ===== */
+
+/* Double-page : la carte occupe la page de droite, entre la reliure et la tranche du livre. */
+@media (min-width: 940px) and (min-height: 650px) {
+  .grimoire-book.is-custom .right-page {
+    margin: 5.5% 0 6.5%;
+    padding: 2% 12% 2% 4%;
+  }
+
+  .grimoire-book.is-custom .right-page-content {
+    height: 100%;
+  }
+
+  /* Index / éditeur : marges réduites pour laisser plus de place aux listes (la page défile). */
+  .grimoire-book.is-custom .left-page {
+    margin: 5.5% 0 6.5%;
+    padding: 2% 4% 2% 18%;
+  }
+
+  .map-plate {
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    container-type: size;
+  }
+
+  /* Le plus grand cadre qui tient dans la page, aux proportions de l'image (barre de zoom comprise). */
+  .map-plate > app-world-map {
+    width: min(100cqw, calc((100cqh - 52px) * var(--world-map-ratio, 1.15)));
+    margin-inline: auto;
+  }
+}
+
+/* Page unique (téléphone) : la carte prend toute la largeur de la page, l'index suit. */
+.map-plate > app-world-map {
+  display: block;
+}
+
+/* ===== Page de gauche : index de la carte / éditeur ===== */
+
+.map-index {
+  color: #2a1708;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.map-index h2 {
+  margin: 0 0 10px;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 28px;
+  line-height: 1.2;
+  text-align: center;
+  color: #3a1d0a;
+}
+
+.map-index h3 {
+  margin: 0 0 8px;
+  font-family: "Cinzel", serif;
+  font-size: 17px;
+  color: #3a1d0a;
+}
+
+.map-index p {
+  margin: 0 0 10px;
+}
+
+.map-index button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.map-index a {
+  color: #4a2410;
+  text-underline-offset: 3px;
+}
+
+.map-index a:hover {
+  color: #7a3a0c;
+}
+
+.map-index a:focus-visible,
+.map-index button:focus-visible,
+.map-index input:focus-visible,
+.map-index select:focus-visible,
+.map-index textarea:focus-visible,
+.map-plate a:focus-visible,
+.map-plate button:focus-visible {
+  outline: 3px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+.map-index-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(90, 60, 30, 0.4);
+}
+
+/* Fil d'Ariane de la hiérarchie */
+.map-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.map-breadcrumb li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.map-breadcrumb li + li::before {
+  content: '›';
+  opacity: 0.7;
+}
+
+.map-breadcrumb [aria-current] {
+  font-weight: 700;
+}
+
+.map-level {
+  font: 600 11px "Cinzel", serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6b5034;
+}
+
+.map-link {
+  min-height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #4a2410;
+  font-size: inherit;
+  text-decoration: underline rgba(122, 79, 18, 0.6);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.map-link:hover {
+  color: #7a3a0c;
+}
+
+/* Avertissement : sceau de cire rouge, comme sur les pages de compte. */
+.map-demo-notice {
+  margin-top: 16px;
+  padding: 8px 10px;
+  border: 1px solid #8b3a3a;
+  border-left-width: 5px;
+  border-radius: 4px;
+  background: rgba(139, 58, 58, 0.08);
+  color: #4a1410;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* Fiche du lieu sélectionné */
+.map-card {
+  position: relative;
+  box-sizing: border-box;
+  margin: 4px 0 12px;
+  padding: 10px 46px 2px 14px;
+  border: 1px solid #8a6a3a;
+  border-radius: 8px;
+  background: rgba(251, 241, 218, 0.92);
+  box-shadow:
+    inset 0 0 0 3px rgba(227, 185, 100, 0.35),
+    0 4px 14px rgba(42, 23, 8, 0.2);
+  color: #2a1708;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.45;
+  scroll-margin: 12px;
+}
+
+.map-plate .map-card {
+  margin-top: 12px;
+}
+
+.map-card h3 {
+  margin: 0 0 2px;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 20px;
+  color: #3a1d0a;
+}
+
+.map-card p {
+  margin: 0 0 10px;
+}
+
+.map-card-type {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font: 600 13px "Cinzel", serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #5c4630;
+}
+
+.map-card .map-card-type {
+  margin-bottom: 4px;
+}
+
+.map-card-path {
+  font-size: 14px;
+  font-style: italic;
+  color: #5c4630;
+}
+
+.map-card-demo {
+  font-size: 14px;
+  color: #5c4630;
+}
+
+.map-card-links {
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.map-card-link {
+  color: #4a2410;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.map-card-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #8a6a3a;
+  border-radius: 50%;
+  background: #f3e3bd;
+  color: #3a1d0a;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.map-card-close:hover {
+  background: #ead19a;
+}
+
+/* Étiquettes : exemple, brouillon, sans lieu, non enregistré */
+.map-tag {
+  display: inline-block;
+  padding: 0 8px;
+  border: 1px solid rgba(122, 79, 18, 0.5);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.7);
+  color: #5c4630;
+  font: italic 13px "IM Fell English", Georgia, serif;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.map-tag-muted {
+  border-style: dashed;
+}
+
+.map-tag-warn {
+  border-color: #9b6b1e;
+  background: #f8e3b4;
+  color: #5a3a0a;
+}
+
+/* Filtres par type */
+.map-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.map-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 12px;
+  border: 1px solid #8a6a3a;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #3a1d0a;
+  font-size: 15px;
+}
+
+.map-chip:hover {
+  background: #f3e3bd;
+}
+
+/* Filtre actif : or des onglets du grimoire */
+.map-chip[aria-pressed='true'] {
+  border-color: #6b430d;
+  background: linear-gradient(135deg, #e0b552, #c3922f);
+  box-shadow: inset 0 1px 2px rgba(255, 235, 170, 0.4);
+  font-weight: 700;
+}
+
+.map-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: #2a1708;
+  font-size: 16px;
+  text-align: left;
+}
+
+.map-list-item:hover {
+  border-color: rgba(138, 106, 58, 0.5);
+  background: rgba(255, 250, 240, 0.6);
+}
+
+.map-list-item[aria-pressed='true'] {
+  border-color: #8a6a3a;
+  background: #fbf1da;
+  font-weight: 700;
+}
+
+.map-list-type {
+  flex: none;
+  font-size: 14px;
+  font-style: italic;
+  color: #5c4630;
+}
+
+.map-count {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(122, 79, 18, 0.15);
+  font: 600 13px "Cinzel", serif;
+  text-align: center;
+}
+
+.map-empty,
+.map-hint {
+  font-size: 15px;
+  color: #5c4630;
+}
+
+.map-hint-warn {
+  color: #6e3a0a;
+  font-weight: 700;
+}
+
+/* Symbole d'un type de lieu (couleur fournie par le registre des types : --place-color). */
+.map-glyph {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--place-color, #6b430d);
+  color: #fbf1da;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* ===== Éditeur de carte ===== */
+
+.map-editor-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  font: 600 14px "Cinzel", serif;
+}
+
+.map-editor-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.map-alert {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 5px solid #7a4f12;
+  background: #f5e6c3;
+  color: #3a1d0a;
+  font-size: 15px;
+}
+
+.map-alert-error {
+  border-left-color: #9b2c2c;
+  background: #fbe9e6;
+  color: #6e1a1a;
+}
+
+.map-alert-success {
+  border-left-color: #2f6b3a;
+  background: #e9f3e6;
+  color: #1f4a27;
+}
+
+.map-editor-form {
+  margin: 4px 0 8px;
+  padding: 12px 14px 4px;
+  border: 1px solid #8a6a3a;
+  border-radius: 8px;
+  background: rgba(251, 241, 218, 0.92);
+  box-shadow: inset 0 0 0 3px rgba(227, 185, 100, 0.35);
+}
+
+.map-editor-form h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.map-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: 10px;
+}
+
+.map-field label,
+.map-field-label {
+  font: 600 14px "Cinzel", serif;
+  color: #3a1d0a;
+}
+
+.map-field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0 10px;
+}
+
+.map-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #8a6a3a;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: #2a1708;
+  font: 16px Georgia, "Times New Roman", serif;
+}
+
+textarea.map-input {
+  resize: vertical;
+}
+
+.map-position {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 15px;
+}
+
+.map-index .map-position {
+  margin-bottom: 4px;
+}
+
+.map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* Boutons : or des onglets du grimoire (principal), parchemin (secondaire) */
+.map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 4px 14px;
+  border: 1px solid #8a6a3a;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: #3a1d0a;
+  font: 700 14px "Cinzel", serif;
+  letter-spacing: 0.5px;
+}
+
+.map-btn:hover:not(:disabled) {
+  background: #f3e3bd;
+}
+
+.map-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.map-btn-small {
+  min-height: 34px;
+  padding: 2px 10px;
+  font-size: 13px;
+}
+
+.map-btn-primary {
+  border-color: #6b430d;
+  background: linear-gradient(135deg, #e0b552, #c3922f);
+  box-shadow: inset 0 1px 2px rgba(255, 235, 170, 0.4);
+  color: #24130a;
+}
+
+.map-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ebc265, #cf9d38);
+}
+
+.map-btn-danger {
+  border-color: #9b2c2c;
+  color: #7a1a1a;
+}
+
+.map-btn[aria-pressed='true'] {
+  box-shadow: inset 0 2px 5px rgba(60, 25, 5, 0.35);
+  background: #ead19a;
+}
+
+/* Fiches associées au point ouvert */
+.map-entry-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.map-entry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 2px 10px;
+  border: 1px solid #8a6a3a;
+  border-radius: 999px;
+  background: #fffaf0;
+  font-size: 15px;
+}
+
+.map-chip-remove {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: #6e1a1a;
+}
+
+.map-chip-remove:hover {
+  background: #f3e3bd;
+}
+
+.map-muted {
+  color: #5c4630;
+  font-style: italic;
+}
+
+.map-filters {
+  margin-bottom: 4px;
+}
+
+.map-selection {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 0 8px;
+  padding: 8px 10px 0;
+  border: 1px solid #6b430d;
+  border-radius: 8px;
+  background: #f8e9c4;
+  box-shadow: 0 4px 10px rgba(42, 23, 8, 0.15);
+}
+
+.map-selection p {
+  margin-bottom: 6px;
+}
+
+/* Liste des fiches avec leur état « sans lieu » / « lié à … » */
+.map-entry-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 10px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-bottom-color: rgba(90, 60, 30, 0.2);
+  border-radius: 6px;
+}
+
+.map-entry.is-selected {
+  border-color: #8a6a3a;
+  background: rgba(251, 241, 218, 0.9);
+}
+
+.map-entry-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  min-height: 36px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.map-entry-main input {
+  width: 18px;
+  height: 18px;
+  accent-color: #7a4f12;
+}
+
+.map-entry-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.map-entry-type {
+  font-size: 14px;
+  font-style: italic;
+  color: #5c4630;
+}
+
+.map-entry-place {
+  margin-left: auto;
+  font-size: 15px;
+}
+
+/* Barre de la carte : invitation à cliquer pendant le placement */
+.map-placing-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 4px 12px;
+  border: 1px solid #9b6b1e;
+  border-radius: 999px;
+  background: #f8e3b4;
+  color: #5a3a0a;
+  font: 600 14px "Cinzel", serif;
+}
+
+/* ===== Composant <app-world-map> ===== */
+
+.world-map-toolbar {
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 6px;
+}
+
+.world-map-zoom {
+  display: flex;
+  gap: 6px;
+}
+
+.world-map-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #6b430d;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e0b552, #c3922f);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 235, 170, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+  color: #24130a;
+  font: 700 20px "Cinzel", serif;
+  cursor: pointer;
+}
+
+.world-map-control-wide {
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.world-map-control:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ebc265, #cf9d38);
+}
+
+.world-map-control:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.world-map-control:focus-visible {
+  outline: 3px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+/* Barre très étroite : « Vue d'ensemble » en symbole seul (libellé lu et affiché en infobulle). */
+@container (max-width: 22rem) {
+  .world-map-control-wide .world-map-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Zone de la carte : repère des éléments superposés (message de chargement). */
+.world-map-viewport {
+  position: relative;
+}
+
+/* Cadre de la carte : proportions de l'image (aspect-ratio fixé par le composant). */
+.world-map-canvas {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: auto;
+  border: 2px solid #6b430d;
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(227, 185, 100, 0.6),
+    0 2px 10px rgba(42, 23, 8, 0.35);
+  /* Couleur de la mer de l'illustration, visible seulement pendant le chargement. */
+  background: #c9d3c0;
+  touch-action: none;
+}
+
+.world-map-canvas.leaflet-container {
+  font-family: "IM Fell English", Georgia, serif;
+}
+
+.world-map-canvas:focus-visible {
+  outline: 3px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+/* Placement d'un point : curseur en croix sur toute la carte. */
+.world-map-canvas.is-placing,
+.world-map-canvas.is-placing.leaflet-grab,
+.world-map-canvas.is-placing .leaflet-interactive {
+  cursor: crosshair;
+}
+
+/* Message pendant le chargement de l'illustration. */
+.world-map-status {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 1;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 14px;
+  border: 1px solid #8a6a3a;
+  border-radius: 999px;
+  background: #fbf1da;
+  color: #3a1d0a;
+  font-size: 15px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(42, 23, 8, 0.3);
+}
+
+/* Marqueurs : l'élément est positionné par Leaflet (transform), le disque visible est à l'intérieur. */
+.world-map-marker {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.world-map-marker-glyph {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #e3b964;
+  border-radius: 50%;
+  background: var(--place-color, #6b430d);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+  color: #fbf1da;
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.world-map-marker:hover .world-map-marker-glyph {
+  transform: scale(1.15);
+}
+
+.world-map-marker.is-selected .world-map-marker-glyph {
+  transform: scale(1.3);
+  border-color: #fff3d6;
+  box-shadow:
+    0 0 0 3px #7a3a0c,
+    0 0 14px 4px rgba(255, 215, 120, 0.9);
+}
+
+/* Marqueur en cours d'édition : déplaçable (cercle en pointillés autour du disque). */
+.world-map-marker.is-editable {
+  cursor: move;
+}
+
+.world-map-marker.is-editable::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 2px dashed #fff3d6;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.world-map-marker:focus-visible {
+  outline: 3px solid #fff3d6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-map-marker-glyph {
+    transition: none;
+  }
+}
+
+/* ===== Frontières des royaumes ===== */
+
+/* Choix de l'outil dans l'éditeur : lieux ou frontières (onglets dorés du grimoire). */
+.map-mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 4px 0 10px;
+}
+
+.map-mode-switch button {
+  min-height: 42px;
+  padding: 4px 10px;
+  border: 1px solid #8a6a3a;
+  border-radius: 8px 8px 4px 4px;
+  background: #fffaf0;
+  color: #3a1d0a;
+  font: 700 14px "Cinzel", serif;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.map-mode-switch button:hover {
+  background: #f3e3bd;
+}
+
+.map-mode-switch button[aria-pressed='true'] {
+  border-color: #6b430d;
+  background: linear-gradient(135deg, #e0b552, #c3922f);
+  box-shadow: inset 0 1px 2px rgba(255, 235, 170, 0.4), 0 2px 6px rgba(42, 23, 8, 0.25);
+  color: #24130a;
+}
+
+.map-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.map-check input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: #7a4f12;
+}
+
+.map-index input[type='range'] {
+  width: 100%;
+  accent-color: #7a4f12;
+}
+
+.map-color {
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+/* Pastille de couleur d'un royaume */
+.map-swatch {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color, #6b430d);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--border-color, #6b430d) 35%, transparent);
+}
+
+.map-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-bottom: 6px;
+}
+
+.map-section-head h3 {
+  margin: 0;
+}
+
+.map-border-list,
+.map-legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-border-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 2px 4px;
+  border: 1px solid transparent;
+  border-bottom-color: rgba(90, 60, 30, 0.2);
+  border-radius: 6px;
+}
+
+.map-border-item.is-selected {
+  border-color: #8a6a3a;
+  background: rgba(251, 241, 218, 0.9);
+}
+
+.map-border-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 2px 4px;
+  border: none;
+  background: none;
+  color: #2a1708;
+  font-size: 16px;
+  text-align: left;
+}
+
+.map-border-flags {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #8a6a3a;
+  border-radius: 50%;
+  background: #fffaf0;
+  color: #3a1d0a;
+  font-size: 16px;
+}
+
+.map-icon-btn[aria-pressed='false'] {
+  opacity: 0.6;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  font-size: 16px;
+}
+
+/* Indication du mode actif, au-dessus de la carte (pas de confusion entre tracer et déplacer). */
+.map-drawing-hint {
+  flex-wrap: wrap;
+  border-color: #7a3a0c;
+  background: #fbe3c4;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.map-hint-actions {
+  display: inline-flex;
+  gap: 12px;
+}
+
+.map-hint-actions .map-link:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.map-border-mode-hint {
+  font-size: 13px;
+}
+
+/* Calques des lieux masqués ou verrouillés (gestion des frontières). */
+.world-map-canvas.places-hidden .leaflet-marker-pane {
+  display: none;
+}
+
+.world-map-canvas.places-locked .leaflet-marker-pane {
+  opacity: 0.55;
+}
+
+.world-map-canvas.places-locked .leaflet-marker-pane * {
+  pointer-events: none !important;
+}
+
+/* Frontière sélectionnée : liseré clair sous le contour (lisible sur toutes les couleurs). */
+.world-map-border.is-selected {
+  filter: drop-shadow(0 0 3px rgba(255, 243, 214, 0.95));
+}
+
+/* Nom d'un royaume, centré sur son territoire ; ne capte aucun clic. */
+.world-map-border-label-anchor {
+  pointer-events: none;
+}
+
+.world-map-border-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  padding: 1px 8px;
+  border-radius: 999px;
+  /* Fond léger : un marqueur situé sous le nom reste visible. */
+  background: rgba(251, 241, 218, 0.55);
+  color: color-mix(in srgb, var(--border-color, #3a1d0a) 70%, #000);
+  font: 700 13px "Cinzel", serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 3px rgba(251, 241, 218, 0.9);
+}
+
+/* Poignées du tracé : sommets, milieux des côtés, déplacement global. */
+.world-map-vertex {
+  box-sizing: border-box;
+  border: 2px solid #3a1d0a;
+  border-radius: 3px;
+  background: #fff3d6;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  cursor: move;
+}
+
+.world-map-vertex.is-first {
+  border-color: #2f6b3a;
+  border-radius: 50%;
+  background: #c8e6b8;
+  box-shadow: 0 0 0 4px rgba(47, 107, 58, 0.35), 0 1px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.world-map-vertex.is-mid {
+  transform-origin: center;
+  border-width: 1px;
+  border-style: dashed;
+  border-radius: 50%;
+  background: rgba(255, 243, 214, 0.75);
+  cursor: copy;
+}
+
+.world-map-move-handle {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 2px solid #3a1d0a;
+  border-radius: 50%;
+  background: #e0b552;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+  color: #24130a;
+  font-size: 18px;
+  line-height: 1;
+  cursor: move;
+}
+
+/* Écrans tactiles : zone de saisie des poignées élargie (invisible). */
+@media (pointer: coarse) {
+  .world-map-vertex::before,
+  .world-map-move-handle::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+  }
+}

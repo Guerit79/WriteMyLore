@@ -1,0 +1,208 @@
+@if (editor.loadError(); as error) {
+  <p class="map-alert map-alert-error" role="alert">{{ error }}</p>
+}
+
+@if (editor.feedback(); as fb) {
+  <p
+    class="map-alert"
+    [class.map-alert-error]="fb.kind === 'error'"
+    [class.map-alert-success]="fb.kind === 'success'"
+    [attr.role]="fb.kind === 'error' ? 'alert' : 'status'"
+  >
+    {{ fb.message }}
+  </p>
+}
+
+<!-- Calques : affichage dans l'éditeur, et interrupteur général de la carte publique -->
+<section class="map-index-section map-layers" aria-labelledby="border-layers-title">
+  <h3 id="border-layers-title">Calques</h3>
+  <label class="map-check">
+    <input type="checkbox" [checked]="editor.showBordersLayer()" (change)="editor.showBordersLayer.set(checked($event))" />
+    Frontières des royaumes (dans l’éditeur)
+  </label>
+  <label class="map-check">
+    <input type="checkbox" [checked]="editor.showPlacesLayer()" (change)="editor.showPlacesLayer.set(checked($event))" />
+    Lieux (dans l’éditeur)
+  </label>
+  <label class="map-check">
+    <input
+      type="checkbox"
+      [checked]="editor.settings().showOnPublicMap"
+      (change)="editor.setShowOnPublicMap(checked($event))"
+    />
+    Afficher les frontières sur la carte publique
+  </label>
+  <p class="map-hint">Seules les frontières « publiques » et visibles y apparaissent. Enregistré dans ce navigateur.</p>
+</section>
+
+<!-- Frontière ouverte -->
+@if (editor.draft(); as d) {
+  <section class="map-editor-form" aria-labelledby="border-form-title" (keydown.escape)="editor.cancel()">
+    <h3 id="border-form-title">
+      <span class="map-swatch" [style.--border-color]="d.color" aria-hidden="true"></span>
+      {{ d.isNew ? 'Nouveau royaume' : 'Royaume « ' + (d.name || 'sans nom') + ' »' }}
+      @if (editor.dirty()) {
+        <span class="map-tag map-tag-warn">non enregistré</span>
+      }
+    </h3>
+
+    <!-- Outils de tracé -->
+    <div class="map-field">
+      <span class="map-field-label">Tracé ({{ d.points.length }} sommet{{ d.points.length > 1 ? 's' : '' }})</span>
+      <div class="map-actions">
+        @switch (editor.tool()) {
+          @case ('drawing') {
+            <button type="button" class="map-btn map-btn-primary" [disabled]="d.points.length < minPoints" (click)="editor.finish()">Terminer</button>
+            <button type="button" class="map-btn" [disabled]="d.points.length === 0" (click)="editor.undoPoint()">Annuler le point</button>
+          }
+          @case ('editing') {
+            <button type="button" class="map-btn map-btn-primary" (click)="editor.stopEditing()">Terminer la modification</button>
+          }
+          @default {
+            @if (d.closed) {
+              <button type="button" class="map-btn" (click)="editor.startEditing()">Modifier le tracé</button>
+            }
+          }
+        }
+        <button type="button" class="map-btn" [disabled]="d.points.length === 0" (click)="editor.redraw()">Effacer et redessiner</button>
+      </div>
+    </div>
+
+    <div class="map-field">
+      <label for="border-name">Nom du royaume</label>
+      <input id="border-name" class="map-input" type="text" [value]="d.name" (input)="editor.patch({ name: value($event) })" autocomplete="off" />
+    </div>
+
+    <div class="map-field">
+      <label for="border-entry">Fiche associée</label>
+      <select id="border-entry" class="map-input" (change)="editor.patch({ loreEntryId: value($event) || null })">
+        <option value="" [selected]="d.loreEntryId === null">Aucune</option>
+        @if (editor.kingdomEntries().length > 0) {
+          <optgroup label="Fiches « Royaume »">
+            @for (entry of editor.kingdomEntries(); track entry.id) {
+              <option [value]="entry.id" [selected]="entry.id === d.loreEntryId">{{ entry.name }}</option>
+            }
+          </optgroup>
+        }
+        <optgroup label="Autres fiches">
+          @for (entry of editor.otherEntries(); track entry.id) {
+            <option [value]="entry.id" [selected]="entry.id === d.loreEntryId">{{ entry.name }} ({{ entry.type }})</option>
+          }
+        </optgroup>
+      </select>
+      <p class="map-position">
+        @if (entryFor(d.loreEntryId); as entry) {
+          @let target = entryLink(entry);
+          <a [routerLink]="target.commands" [queryParams]="target.queryParams">Ouvrir la fiche « {{ entry.name }} »</a>
+        } @else {
+          <button type="button" class="map-btn map-btn-small" (click)="editor.createKingdomEntry()">Créer une fiche « Royaume »</button>
+        }
+      </p>
+    </div>
+
+    <div class="map-field-row">
+      <div class="map-field">
+        <label for="border-color">Couleur</label>
+        <input id="border-color" class="map-input map-color" type="color" [value]="d.color" (input)="editor.patch({ color: value($event) })" />
+      </div>
+      <div class="map-field">
+        <label for="border-style">Contour</label>
+        <select id="border-style" class="map-input" (change)="editor.setStrokeStyle(value($event))">
+          @for (style of strokeStyles; track style.id) {
+            <option [value]="style.id" [selected]="style.id === d.strokeStyle">{{ style.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="map-field-row">
+      <div class="map-field">
+        <label for="border-width">Épaisseur : {{ d.strokeWidth }} px</label>
+        <input
+          id="border-width"
+          type="range"
+          [min]="strokeWidth.min"
+          [max]="strokeWidth.max"
+          step="1"
+          [value]="d.strokeWidth"
+          (input)="editor.patch({ strokeWidth: +value($event) })"
+        />
+      </div>
+      <div class="map-field">
+        <label for="border-opacity">Remplissage : {{ percent(d.fillOpacity) }} %</label>
+        <input
+          id="border-opacity"
+          type="range"
+          [min]="fillOpacity.min"
+          [max]="fillOpacity.max"
+          step="0.05"
+          [value]="d.fillOpacity"
+          (input)="editor.patch({ fillOpacity: +value($event) })"
+        />
+      </div>
+    </div>
+
+    <div class="map-field">
+      <label class="map-check">
+        <input type="checkbox" [checked]="d.visible" (change)="editor.patch({ visible: checked($event) })" />
+        Frontière visible
+      </label>
+      <label class="map-check">
+        <input type="checkbox" [checked]="d.isPublic" (change)="editor.patch({ isPublic: checked($event) })" />
+        Rendre publique (carte publique)
+      </label>
+    </div>
+
+    <div class="map-actions">
+      <button type="button" class="map-btn map-btn-primary" [disabled]="editor.pending() || !editor.dirty()" (click)="editor.save()">Enregistrer</button>
+      <button type="button" class="map-btn" [disabled]="!editor.dirty()" (click)="editor.cancel()">Annuler les modifications</button>
+      <button type="button" class="map-btn" (click)="editor.close()">Fermer</button>
+      @if (!d.isNew) {
+        <button type="button" class="map-btn map-btn-danger" (click)="editor.remove()">
+          {{ editor.confirmDelete() ? 'Confirmer la suppression' : 'Supprimer' }}
+        </button>
+      }
+    </div>
+    @if (editor.confirmDelete()) {
+      <p class="map-hint map-hint-warn" role="alert">Supprimer « {{ d.name }} » ? Cliquez de nouveau sur « Confirmer la suppression ».</p>
+    }
+  </section>
+}
+
+<!-- Liste des royaumes -->
+<section class="map-index-section" aria-labelledby="border-list-title">
+  <div class="map-section-head">
+    <h3 id="border-list-title">Royaumes <span class="map-count">{{ editor.borders().length }}</span></h3>
+    <button type="button" class="map-btn map-btn-primary map-btn-small" (click)="editor.newKingdom()">Nouveau royaume</button>
+  </div>
+  <ul class="map-border-list">
+    @for (border of editor.borders(); track border.id) {
+      <li class="map-border-item" [class.is-selected]="editor.selectedId() === border.id">
+        <button type="button" class="map-border-select" [attr.aria-pressed]="editor.selectedId() === border.id" (click)="editor.select(border.id)">
+          <span class="map-swatch" [style.--border-color]="border.color" aria-hidden="true"></span>
+          <span class="map-entry-name">{{ border.name }}</span>
+          @if (entryFor(border.loreEntryId); as entry) {
+            <span class="map-entry-type">fiche : {{ entry.name }}</span>
+          }
+        </button>
+        <span class="map-border-flags">
+          @if (border.isPublic) {
+            <span class="map-tag">publique</span>
+          }
+          <button
+            type="button"
+            class="map-icon-btn"
+            [attr.aria-pressed]="border.visible"
+            [attr.aria-label]="(border.visible ? 'Masquer ' : 'Afficher ') + border.name"
+            [title]="border.visible ? 'Visible — cliquer pour masquer' : 'Masquée — cliquer pour afficher'"
+            (click)="editor.toggleVisible(border)"
+          >
+            <span aria-hidden="true">{{ border.visible ? '◉' : '○' }}</span>
+          </button>
+        </span>
+      </li>
+    } @empty {
+      <li class="map-empty">Aucune frontière pour l’instant. « Nouveau royaume » pour en dessiner une.</li>
+    }
+  </ul>
+</section>

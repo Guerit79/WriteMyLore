@@ -7,6 +7,8 @@ import {
   LocalStorageLoreRepository,
 } from '../../../core/data/local-storage-lore-repository';
 import { LoreRepository } from '../../../core/data/lore-repository';
+import { LocalStorageWorldMapRepository } from '../../../core/data/local-storage-world-map-repository';
+import { WorldMapRepository } from '../../../core/data/world-map-repository';
 import { LoreStore } from '../../../core/services/lore-store';
 
 /** Parcours du Dashboard joués à travers l'interface (formulaires, boutons, liens). */
@@ -57,6 +59,7 @@ describe('Dashboard Lore (parcours)', () => {
       providers: [
         provideRouter(routes, withComponentInputBinding()),
         { provide: LoreRepository, useClass: LocalStorageLoreRepository },
+        { provide: WorldMapRepository, useClass: LocalStorageWorldMapRepository },
       ],
     });
     harness = await RouterTestingHarness.create();

@@ -19,6 +19,12 @@ export const routes: Routes = [
     component: LoreEntryPage,
     title: loreEntryTitle
   },
+  {
+    // Carte du monde interactive : chargée à la demande (Leaflet n'alourdit pas l'accueil).
+    path: 'carte',
+    title: 'Carte du monde · WriteMyLore',
+    loadComponent: () => import('./public/pages/map-page/map-page').then((m) => m.MapPage)
+  },
   // Comptes en MODE DÉMONSTRATION : aucune authentification réelle ni protection de route.
   {
     path: 'connexion',
@@ -34,6 +40,14 @@ export const routes: Routes = [
     path: 'profil',
     component: ProfilePage,
     title: 'Profil · WriteMyLore'
+  },
+  {
+    // Éditeur de carte : hors du layout d'administration, dans le même grimoire que la carte publique.
+    // Déclaré avant `admin` pour ne pas être capté par ses routes enfants. Non sécurisé, comme `admin`.
+    path: 'admin/carte',
+    title: 'Éditeur de carte · WriteMyLore',
+    loadComponent: () =>
+      import('./admin/pages/map-editor-page/map-editor-page').then((m) => m.MapEditorPage)
   },
   {
     // Accès discret, non sécurisé : aucune authentification pour l'instant.

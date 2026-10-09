@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LORE_ENTRY_TYPES } from '../../../core/models/lore';
 import { LoreStore } from '../../../core/services/lore-store';
+import { WorldMapStore } from '../../../core/services/world-map-store';
 import { NEW_ENTRY_PARAM, adminEntryLink } from '../../admin-sections';
 
 @Component({
@@ -22,6 +23,15 @@ export class LoreOverview {
       type,
       count: entries.filter((entry) => entry.type === type).length,
     })).filter((item) => item.count > 0);
+  });
+
+  private readonly mapStore = inject(WorldMapStore);
+
+  /** Carte du monde : points enregistrés et fiches placées / sans lieu. */
+  protected readonly mapStats = computed(() => {
+    const entries = this.store.entries();
+    const placed = entries.filter((entry) => this.mapStore.placeByEntryId().has(entry.id)).length;
+    return { places: this.mapStore.places().length, placed, unplaced: entries.length - placed };
   });
 
   protected readonly recentEntries = computed(() =>

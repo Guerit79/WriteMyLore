@@ -1,0 +1,275 @@
+<main class="home-page">
+  <!-- Même grimoire que la carte publique ; pas d'onglets de chapitres (ce n'est pas une page publique). -->
+  <app-grimoire-book [customPages]="true" [showTabs]="false">
+    <div class="map-index map-editor" grimoireLeft>
+      <p class="map-editor-nav">
+        <a routerLink="/admin">↩ Retour au dashboard</a>
+        <a routerLink="/carte">Voir la carte publique</a>
+      </p>
+      <h2 id="map-editor-title">Éditeur de carte</h2>
+
+      <p class="map-demo-notice" role="note">
+        <strong>Enregistrement local :</strong> les points, leurs fiches et les frontières sont
+        sauvegardés dans ce navigateur uniquement (aucun serveur, aucune protection d’accès).
+      </p>
+
+      <div class="map-mode-switch" role="group" aria-label="Élément à modifier sur la carte">
+        <button type="button" [attr.aria-pressed]="mode() === 'lieux'" (click)="setMode('lieux')">
+          <span aria-hidden="true">⌖</span> Lieux et fiches
+        </button>
+        <button type="button" [attr.aria-pressed]="mode() === 'frontieres'" (click)="setMode('frontieres')">
+          <span aria-hidden="true">⛉</span> Gérer les frontières
+        </button>
+      </div>
+
+      @if (mode() === 'lieux') {
+        @for (error of [mapLoadError(), loreLoadError()]; track $index) {
+          @if (error) {
+            <p class="map-alert map-alert-error" role="alert">{{ error }}</p>
+          }
+        }
+
+        @if (feedback(); as fb) {
+          <p
+            class="map-alert"
+            [class.map-alert-error]="fb.kind === 'error'"
+            [class.map-alert-success]="fb.kind === 'success'"
+            [attr.role]="fb.kind === 'error' ? 'alert' : 'status'"
+          >
+            {{ fb.message }}
+          </p>
+        }
+
+        <!-- Point ouvert (copie de travail) -->
+        @if (draft(); as d) {
+          @let definition = typeOf(d.type);
+          <section class="map-editor-form" aria-labelledby="map-editor-point-title" (keydown.escape)="cancel()">
+            <h3 id="map-editor-point-title">
+              <span class="map-glyph" [style.--place-color]="definition.color" aria-hidden="true">{{ definition.glyph }}</span>
+              {{ d.isNew ? 'Nouveau point' : 'Point « ' + (d.name || 'sans nom') + ' »' }}
+              @if (dirty()) {
+                <span class="map-tag map-tag-warn">non enregistré</span>
+              }
+            </h3>
+
+            <div class="map-field">
+              <label for="map-point-name">Nom</label>
+              <input id="map-point-name" class="map-input" type="text" [value]="d.name" (input)="onName($event)" autocomplete="off" />
+            </div>
+
+            <div class="map-field-row">
+              <div class="map-field">
+                <label for="map-point-type">Type de point</label>
+                <select id="map-point-type" class="map-input" (change)="onType($event)">
+                  @for (type of placeTypes; track type.id) {
+                    <option [value]="type.id" [selected]="type.id === d.type">{{ type.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="map-field">
+                <label for="map-point-zone">Zone (facultative)</label>
+                <select id="map-point-zone" class="map-input" (change)="onZone($event)">
+                  <option value="" [selected]="d.zoneId === null">Aucune</option>
+                  @for (zone of zones(); track zone.id) {
+                    <option [value]="zone.id" [selected]="zone.id === d.zoneId">{{ zone.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="map-field">
+              <label for="map-point-description">Description</label>
+              <textarea id="map-point-description" class="map-input" rows="3" [value]="d.description" (input)="onDescription($event)"></textarea>
+            </div>
+
+            <div class="map-field">
+              <span class="map-field-label">Position</span>
+              <p class="map-position">
+                @if (d.position; as position) {
+                  {{ position.x }} % × {{ position.y }} % de l’image
+                } @else {
+                  Pas encore placé.
+                }
+                <button type="button" class="map-btn map-btn-small" [attr.aria-pressed]="placing()" (click)="placing() ? stopPlacing() : startPlacing()">
+                  {{ placing() ? 'Annuler le placement' : d.position ? 'Déplacer sur la carte' : 'Placer sur la carte' }}
+                </button>
+              </p>
+              @if (d.position) {
+                <p class="map-hint">Vous pouvez aussi faire glisser le marqueur sur la carte.</p>
+              }
+            </div>
+
+            <div class="map-field">
+              <span class="map-field-label">Fiches associées ({{ draftEntries().length }})</span>
+              @if (draftEntries().length > 0) {
+                <ul class="map-entry-chips">
+                  @for (entry of draftEntries(); track entry.id) {
+                    <li class="map-entry-chip">
+                      <span>{{ entry.name }} <span class="map-muted">· {{ entry.type }}</span></span>
+                      <button type="button" class="map-chip-remove" [attr.aria-label]="'Retirer « ' + entry.name + ' » de ce point'" (click)="removeEntryFromDraft(entry)">
+                        <span aria-hidden="true">✕</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="map-hint">Aucune fiche. Sélectionnez des fiches ci-dessous puis « Ajouter au point ».</p>
+              }
+              @for (item of movingEntries(); track item.entry.id) {
+                <p class="map-hint map-hint-warn">« {{ item.entry.name }} » quittera « {{ item.from.name }} » à l’enregistrement.</p>
+              }
+            </div>
+
+            <div class="map-actions">
+              <button type="button" class="map-btn map-btn-primary" [disabled]="pending() || !dirty()" (click)="save()">Enregistrer</button>
+              <button type="button" class="map-btn" [disabled]="!dirty()" (click)="cancel()">Annuler les modifications</button>
+              <button type="button" class="map-btn" (click)="closeDraft()">Fermer</button>
+              @if (!d.isNew) {
+                <button type="button" class="map-btn map-btn-danger" (click)="deletePlace()">
+                  {{ confirmDelete() ? 'Confirmer la suppression' : 'Supprimer le point' }}
+                </button>
+              }
+            </div>
+          </section>
+        } @else {
+          <p class="map-hint">
+            Cliquez sur un marqueur pour modifier un point, ou sélectionnez des fiches pour en créer un.
+            <button type="button" class="map-btn map-btn-small" (click)="createPlace(false)">Nouveau point vide</button>
+          </p>
+        }
+
+        <!-- Fiches du Lore -->
+        <section class="map-index-section" aria-labelledby="map-entries-title">
+          <h3 id="map-entries-title">Fiches du Lore</h3>
+          <p class="map-hint">{{ entries().length }} fiche(s), dont {{ unlinkedCount() }} sans lieu. Une fiche peut rester sans lieu.</p>
+
+          <div class="map-filters" role="search">
+            <div class="map-field">
+              <label for="map-entry-search">Rechercher</label>
+              <input id="map-entry-search" class="map-input" type="search" [value]="search()" (input)="onSearch($event)" placeholder="Nom de la fiche" autocomplete="off" />
+            </div>
+            <div class="map-field-row">
+              <div class="map-field">
+                <label for="map-entry-type">Catégorie</label>
+                <select id="map-entry-type" class="map-input" (change)="onLoreType($event)">
+                  <option value="">Toutes</option>
+                  @for (type of loreTypes; track type) {
+                    <option [value]="type" [selected]="type === loreType()">{{ type }}</option>
+                  }
+                </select>
+              </div>
+              <div class="map-field">
+                <label for="map-entry-link">Lieu</label>
+                <select id="map-entry-link" class="map-input" (change)="onLinkFilter($event)">
+                  <option value="toutes">Toutes les fiches</option>
+                  <option value="sans-lieu">Sans lieu</option>
+                  <option value="avec-lieu">Déjà placées</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <p class="map-hint" aria-live="polite">{{ filteredEntries().length }} fiche(s) affichée(s).</p>
+
+          @if (selectedEntries().length > 0) {
+            <div class="map-selection" role="group" aria-label="Fiches sélectionnées">
+              <p>
+                <strong>{{ selectedEntries().length }}</strong> fiche(s) sélectionnée(s)
+              </p>
+              <div class="map-actions">
+                <button type="button" class="map-btn map-btn-primary" (click)="createPlace(true)">Créer un point avec</button>
+                @if (draft()) {
+                  <button type="button" class="map-btn" (click)="addSelectionToDraft()">Ajouter au point ouvert</button>
+                }
+                <button type="button" class="map-btn" (click)="clearSelection()">Désélectionner</button>
+              </div>
+            </div>
+          }
+
+          <ul class="map-entry-list">
+            @for (entry of filteredEntries(); track entry.id) {
+              @let place = placeByEntryId().get(entry.id);
+              <li class="map-entry" [class.is-selected]="isSelected(entry)">
+                <label class="map-entry-main">
+                  <input type="checkbox" [checked]="isSelected(entry)" (change)="toggleEntry(entry)" />
+                  <span class="map-entry-name">{{ entry.name }}</span>
+                  <span class="map-entry-type">{{ entry.type }}</span>
+                  @if (entry.status === 'Brouillon') {
+                    <span class="map-tag">brouillon</span>
+                  }
+                </label>
+                <span class="map-entry-place">
+                  @if (inDraft(entry) && !place) {
+                    <span class="map-tag map-tag-warn">dans le point ouvert</span>
+                  } @else if (place) {
+                    <button type="button" class="map-link" (click)="openPlace(place.id, true)" [attr.aria-label]="'Ouvrir le lieu ' + place.name + ' de la fiche ' + entry.name">
+                      <span aria-hidden="true">⌖</span> {{ place.name }}
+                    </button>
+                  } @else {
+                    <span class="map-tag map-tag-muted">Sans lieu</span>
+                  }
+                </span>
+              </li>
+            } @empty {
+              <li class="map-empty">Aucune fiche ne correspond.</li>
+            }
+          </ul>
+        </section>
+      } @else {
+        <app-border-panel />
+      }
+    </div>
+
+    <div class="map-plate" grimoireRight>
+      <app-world-map
+        [places]="mapPlaces()"
+        [selectedId]="mode() === 'lieux' ? (draft()?.id ?? null) : null"
+        [editableId]="mode() === 'lieux' ? editableId() : null"
+        [placing]="placing() || borderEditor.drawing()"
+        [placesVisible]="borderEditor.showPlacesLayer()"
+        [placesInteractive]="mode() === 'lieux'"
+        [borders]="borderEditor.mapBorders()"
+        [bordersVisible]="borderEditor.showBordersLayer()"
+        [selectedBorderId]="mode() === 'frontieres' ? borderEditor.selectedId() : null"
+        [borderSelectable]="mode() === 'frontieres' && borderEditor.tool() === 'idle'"
+        [borderSketch]="borderEditor.sketch()"
+        (placeSelect)="onPlaceSelect($event)"
+        (mapClick)="onAnyMapClick($event)"
+        (placeMove)="onPlaceMove($event)"
+        (borderSelect)="borderEditor.select($event)"
+        (sketchVertexClick)="borderEditor.onVertexClick($event)"
+        (sketchVertexMove)="borderEditor.moveVertex($event)"
+        (sketchVertexInsert)="borderEditor.insertVertex($event)"
+        (sketchTranslate)="borderEditor.translate($event)"
+      >
+        @if (placing()) {
+          <p class="map-placing-hint" mapToolbarEnd role="status">
+            <span aria-hidden="true">⌖</span> Cliquez sur la carte
+            <button type="button" class="map-link" (click)="stopPlacing()">Annuler</button>
+          </p>
+        }
+        <!-- Un @if direct par indication : condition nécessaire à la projection dans la barre de la carte. -->
+        @if (mode() === 'frontieres' && borderEditor.tool() === 'drawing') {
+          <div class="map-placing-hint map-drawing-hint" mapToolbarEnd role="status">
+            <span><span aria-hidden="true">✎</span> Tracé : cliquez pour poser un sommet · glisser déplace la carte</span>
+            <span class="map-hint-actions">
+              <button type="button" class="map-link" [disabled]="(borderEditor.draft()?.points?.length ?? 0) < 3" (click)="borderEditor.finish()">Terminer</button>
+              <button type="button" class="map-link" [disabled]="!borderEditor.draft()?.points?.length" (click)="borderEditor.undoPoint()">Annuler le point</button>
+            </span>
+          </div>
+        }
+        @if (mode() === 'frontieres' && borderEditor.tool() === 'editing') {
+          <div class="map-placing-hint map-drawing-hint" mapToolbarEnd role="status">
+            <span><span aria-hidden="true">◆</span> Modification : glissez les sommets · <span aria-hidden="true">✥</span> déplace la frontière</span>
+            <button type="button" class="map-link" (click)="borderEditor.stopEditing()">Terminer</button>
+          </div>
+        }
+        @if (mode() === 'frontieres' && borderEditor.tool() === 'idle') {
+          <p class="map-placing-hint map-border-mode-hint" mapToolbarEnd role="status">
+            <span aria-hidden="true">⛉</span> Frontières : cliquez sur un royaume pour le sélectionner
+          </p>
+        }
+      </app-world-map>
+    </div>
+  </app-grimoire-book>
+</main>
