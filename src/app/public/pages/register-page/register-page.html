@@ -1,0 +1,132 @@
+<main class="account-layout">
+  <app-account-sheet heading="Inscription">
+    <p class="account-hint">
+      L’inscription crée un profil fictif (pseudo, e-mail, date de création) dans ce navigateur.
+      Le mot de passe sert uniquement à tester le formulaire : il n’est jamais conservé.
+    </p>
+
+    <form class="account-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (submitted() && form.invalid) {
+        <p class="account-alert" role="alert">Corrigez les champs signalés pour créer votre compte.</p>
+      }
+      @if (error(); as message) {
+        <p class="account-alert" role="alert">{{ message }}</p>
+      }
+
+      <div class="account-field">
+        <label for="register-pseudo">Pseudo</label>
+        <input
+          id="register-pseudo"
+          class="account-input"
+          type="text"
+          formControlName="pseudo"
+          autocomplete="nickname"
+          [attr.maxlength]="pseudoMaxLength"
+          [attr.aria-invalid]="showError('pseudo')"
+          [attr.aria-describedby]="errorId('pseudo')"
+        />
+        @if (showError('pseudo')) {
+          <p class="account-error" id="register-pseudo-error">
+            @if (form.controls.pseudo.hasError('required')) {
+              Le pseudo est obligatoire.
+            } @else {
+              Le pseudo doit contenir entre {{ pseudoMinLength }} et {{ pseudoMaxLength }} caractères.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="account-field">
+        <label for="register-email">Adresse e-mail</label>
+        <input
+          id="register-email"
+          class="account-input"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="showError('email')"
+          [attr.aria-describedby]="errorId('email')"
+        />
+        @if (showError('email')) {
+          <p class="account-error" id="register-email-error">
+            @if (form.controls.email.hasError('required')) {
+              L’adresse e-mail est obligatoire.
+            } @else {
+              Saisissez une adresse e-mail valide, par exemple nom&#64;exemple.fr.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="account-field">
+        <label for="register-password">Mot de passe</label>
+        <div class="account-password">
+          <input
+            id="register-password"
+            class="account-input"
+            [type]="showPasswords() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+            [attr.aria-invalid]="showError('password')"
+            [attr.aria-describedby]="'register-password-hint ' + (errorId('password') ?? '')"
+          />
+          <button
+            type="button"
+            class="account-toggle"
+            [attr.aria-pressed]="showPasswords()"
+            aria-controls="register-password register-password-confirmation"
+            (click)="showPasswords.set(!showPasswords())"
+          >
+            {{ showPasswords() ? 'Masquer' : 'Afficher' }}
+            <span class="visually-hidden">les mots de passe</span>
+          </button>
+        </div>
+        <p class="account-hint" id="register-password-hint">Au moins {{ passwordMinLength }} caractères.</p>
+        @if (showError('password')) {
+          <p class="account-error" id="register-password-error">
+            @if (form.controls.password.hasError('required')) {
+              Le mot de passe est obligatoire.
+            } @else {
+              Le mot de passe doit contenir au moins {{ passwordMinLength }} caractères.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="account-field">
+        <label for="register-password-confirmation">Confirmation du mot de passe</label>
+        <input
+          id="register-password-confirmation"
+          class="account-input"
+          [type]="showPasswords() ? 'text' : 'password'"
+          formControlName="passwordConfirmation"
+          autocomplete="new-password"
+          [attr.aria-invalid]="showError('passwordConfirmation')"
+          [attr.aria-describedby]="errorId('passwordConfirmation')"
+        />
+        @if (showError('passwordConfirmation')) {
+          <p class="account-error" id="register-passwordConfirmation-error">
+            @if (form.controls.passwordConfirmation.hasError('required')) {
+              Confirmez le mot de passe.
+            } @else {
+              Les deux mots de passe ne correspondent pas.
+            }
+          </p>
+        }
+      </div>
+
+      <button type="submit" class="account-button" [disabled]="pending()" [attr.aria-busy]="pending()">
+        {{ pending() ? 'Création…' : 'Créer mon compte' }}
+      </button>
+
+      <p class="account-hint">
+        Ces vérifications aident seulement à la saisie : elles ne remplacent pas une validation côté serveur.
+      </p>
+    </form>
+
+    <p class="account-switch">
+      Déjà un compte de démonstration ? <a routerLink="/connexion">Se connecter</a>
+    </p>
+  </app-account-sheet>
+</main>

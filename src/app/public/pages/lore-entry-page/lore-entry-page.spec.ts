@@ -10,6 +10,8 @@ import {
   LocalStorageLoreRepository,
 } from '../../../core/data/local-storage-lore-repository';
 import { LoreRepository } from '../../../core/data/lore-repository';
+import { AccountRepository } from '../../../core/data/account-repository';
+import { DemoAccountRepository } from '../../../core/data/demo-account-repository';
 import { LoreStore } from '../../../core/services/lore-store';
 
 describe('Lecture publique du Lore', () => {
@@ -42,6 +44,7 @@ describe('Lecture publique du Lore', () => {
         provideRouter(routes, withComponentInputBinding()),
         provideLocationMocks(),
         { provide: LoreRepository, useClass: LocalStorageLoreRepository },
+        { provide: AccountRepository, useClass: DemoAccountRepository },
       ],
     });
     harness = await RouterTestingHarness.create();

@@ -1,4 +1,7 @@
 <main class="home-page">
+  <!-- Compte (mode démonstration) : en haut à droite, le bouton d'administration reste en bas à gauche. -->
+  <app-account-menu />
+
   @if (!isBookOpen()) {
     <app-grimoire-cover (openBook)="openGrimoire()" />
   }

@@ -4,6 +4,8 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from 
 import { routes } from './app.routes';
 import { LocalStorageLoreRepository } from './core/data/local-storage-lore-repository';
 import { LoreRepository } from './core/data/lore-repository';
+import { AccountRepository } from './core/data/account-repository';
+import { DemoAccountRepository } from './core/data/demo-account-repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +18,8 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
     ),
     // Stockage du Lore : à remplacer par une implémentation HTTP quand le backend sera prêt.
-    { provide: LoreRepository, useClass: LocalStorageLoreRepository }
+    { provide: LoreRepository, useClass: LocalStorageLoreRepository },
+    // Comptes simulés (MODE DÉMONSTRATION) : à remplacer par une implémentation HTTP sécurisée.
+    { provide: AccountRepository, useClass: DemoAccountRepository }
   ]
 };

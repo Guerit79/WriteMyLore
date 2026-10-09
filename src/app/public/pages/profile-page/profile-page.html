@@ -1,0 +1,42 @@
+<main class="account-layout">
+  <app-account-sheet [heading]="user() ? 'Mon profil' : 'Profil'">
+    @if (user(); as user) {
+      <dl class="account-profile">
+        <div>
+          <dt>Pseudo</dt>
+          <dd>{{ user.pseudo }}</dd>
+        </div>
+        <div>
+          <dt>Adresse e-mail</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div>
+          <dt>Compte de démonstration créé le</dt>
+          <dd><time [attr.datetime]="user.createdAt">{{ createdAtLabel() }}</time></dd>
+        </div>
+      </dl>
+
+      <p class="account-hint">
+        Ce profil n’existe que dans ce navigateur. La session se termine à la fermeture de l’onglet ;
+        cette conservation n’est pas une mesure de sécurité.
+      </p>
+
+      <div class="account-actions">
+        <button type="button" class="account-button" [disabled]="pending()" (click)="logout()">
+          {{ pending() ? 'Déconnexion…' : 'Déconnexion' }}
+        </button>
+      </div>
+    } @else {
+      @if (loggedOut()) {
+        <p class="account-alert account-alert-success" role="status">Vous êtes déconnecté.</p>
+      }
+      <p>Vous n’êtes pas connecté : aucun profil n’est affiché.</p>
+      <p>Connectez-vous avec un compte de démonstration ou créez-en un pour voir votre profil.</p>
+
+      <div class="account-actions">
+        <a class="account-button" routerLink="/connexion">Se connecter</a>
+        <a class="account-button account-button-secondary" routerLink="/inscription">Créer un compte</a>
+      </div>
+    }
+  </app-account-sheet>
+</main>

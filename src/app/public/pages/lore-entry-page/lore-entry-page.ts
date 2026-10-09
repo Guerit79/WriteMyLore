@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GrimoireBook } from '../../../shared/components/grimoire-book/grimoire-book';
+import { AccountMenu } from '../../components/account-menu/account-menu';
 
 /**
  * Page publique d'une fiche (`/lore/:id`) : le grimoire s'affiche déjà ouvert,
@@ -8,7 +9,7 @@ import { GrimoireBook } from '../../../shared/components/grimoire-book/grimoire-
  */
 @Component({
   selector: 'app-lore-entry-page',
-  imports: [GrimoireBook, RouterLink],
+  imports: [GrimoireBook, RouterLink, AccountMenu],
   templateUrl: './lore-entry-page.html',
   styleUrl: '../home-page/home-page.css',
 })

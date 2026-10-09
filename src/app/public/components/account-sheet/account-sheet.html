@@ -1,0 +1,17 @@
+<div class="account-sheet">
+  <div class="account-sheet-bar">
+    <p class="account-sheet-brand">WriteMyLore</p>
+    <a routerLink="/" [queryParams]="homeParams">↩ Retour au grimoire</a>
+  </div>
+
+  <section class="account-page" aria-labelledby="account-title">
+    <h1 id="account-title">{{ heading() }}</h1>
+
+    <p class="account-demo-notice" role="note">
+      <strong>Mode démonstration :</strong> les comptes ne sont pas enregistrés sur un serveur et cette
+      connexion n’est pas sécurisée. N’utilisez pas un vrai mot de passe.
+    </p>
+
+    <ng-content />
+  </section>
+</div>

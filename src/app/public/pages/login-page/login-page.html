@@ -1,0 +1,93 @@
+<main class="account-layout">
+  <app-account-sheet heading="Connexion">
+    @if (user(); as user) {
+      <p class="account-alert account-alert-info" role="status">
+        Vous êtes déjà connecté en tant que <strong>{{ user.pseudo }}</strong>.
+        <a routerLink="/profil">Voir mon profil</a>
+      </p>
+    }
+
+    <p class="account-hint">
+      En démonstration, seul un compte créé dans ce navigateur peut être ouvert et le mot de passe
+      n’est pas vérifié (il n’est jamais conservé).
+    </p>
+
+    <form class="account-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (submitted() && form.invalid) {
+        <p class="account-alert" role="alert">Corrigez les champs signalés pour vous connecter.</p>
+      }
+      @if (error(); as message) {
+        <p class="account-alert" role="alert">{{ message }}</p>
+      }
+
+      <div class="account-field">
+        <label for="login-email">Adresse e-mail</label>
+        <input
+          id="login-email"
+          class="account-input"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="showError('email')"
+          [attr.aria-describedby]="errorId('email')"
+        />
+        @if (showError('email')) {
+          <p class="account-error" id="login-email-error">
+            @if (form.controls.email.hasError('required')) {
+              L’adresse e-mail est obligatoire.
+            } @else {
+              Saisissez une adresse e-mail valide, par exemple nom&#64;exemple.fr.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="account-field">
+        <label for="login-password">Mot de passe</label>
+        <div class="account-password">
+          <input
+            id="login-password"
+            class="account-input"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            [attr.aria-invalid]="showError('password')"
+            [attr.aria-describedby]="errorId('password')"
+          />
+          <button
+            type="button"
+            class="account-toggle"
+            [attr.aria-pressed]="showPassword()"
+            aria-controls="login-password"
+            (click)="showPassword.set(!showPassword())"
+          >
+            {{ showPassword() ? 'Masquer' : 'Afficher' }}
+            <span class="visually-hidden">le mot de passe</span>
+          </button>
+        </div>
+        @if (showError('password')) {
+          <p class="account-error" id="login-password-error">
+            @if (form.controls.password.hasError('required')) {
+              Le mot de passe est obligatoire.
+            } @else {
+              Le mot de passe doit contenir au moins {{ passwordMinLength }} caractères.
+            }
+          </p>
+        }
+      </div>
+
+      <button type="submit" class="account-button" [disabled]="pending()" [attr.aria-busy]="pending()">
+        {{ pending() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+
+      <p class="account-hint">
+        Ces vérifications aident seulement à la saisie : elles ne remplacent pas une validation côté serveur.
+      </p>
+    </form>
+
+    <p class="account-switch">
+      Pas encore de compte ? <a routerLink="/inscription">Créer un compte de démonstration</a>
+    </p>
+  </app-account-sheet>
+</main>

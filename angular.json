@@ -26,7 +26,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/admin.css"
+              "src/admin.css",
+              "src/account.css"
             ]
           },
           "configurations": {
@@ -84,7 +85,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/admin.css"
+              "src/admin.css",
+              "src/account.css"
             ]
           }
         }

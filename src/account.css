@@ -1,0 +1,312 @@
+/*
+ * Pages de compte (connexion, inscription, profil) — MODE DÉMONSTRATION.
+ * Mêmes matières que la page unique du grimoire : reliure de cuir, cadre doré, parchemin.
+ * Tout est préfixé « account- ».
+ */
+
+.account-layout {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(12px, 5vh, 48px) 8px 48px;
+  background: #080402;
+}
+
+/* L'élément hôte porte la largeur : sinon il s'étire sur son contenu et le cadre n'est plus centré. */
+.account-layout > app-account-sheet {
+  display: block;
+  width: min(34rem, 100%);
+}
+
+/* Reliure de cuir */
+.account-sheet {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 8px 8px;
+  border-radius: 12px;
+  background: url('/assets/textures/T_Cuir_2.png') center / cover, #3a1810;
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 168, 67, 0.35),
+    inset 0 0 24px rgba(0, 0, 0, 0.65),
+    0 24px 60px rgba(0, 0, 0, 0.85);
+}
+
+.account-sheet-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 0 8px 6px;
+}
+
+.account-sheet-brand {
+  margin: 0;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 15px;
+  color: #e3b964;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.account-sheet-bar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #f3dfaa;
+  font-family: "Cinzel", serif;
+  font-size: 14px;
+  text-underline-offset: 4px;
+}
+
+.account-sheet-bar a:hover {
+  color: #fff3d6;
+}
+
+.account-sheet-bar a:focus-visible {
+  outline: 3px solid #f0c860;
+  outline-offset: 2px;
+}
+
+/* Page de parchemin dans le cadre doré */
+.account-page {
+  box-sizing: border-box;
+  border: clamp(14px, 5vw, 22px) solid transparent;
+  border-image-source: url('/assets/textures/T_Page_2.png');
+  border-image-slice: 80;
+  border-image-width: clamp(14px, 5vw, 22px);
+  border-image-repeat: stretch;
+  background: url('/assets/textures/T_Page_x.png') center / cover no-repeat, #ead9b4;
+  background-clip: padding-box;
+  padding: clamp(14px, 5vw, 32px) clamp(12px, 5vw, 32px);
+  color: #2a1708;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.account-page h1 {
+  margin: 0 0 16px;
+  font-family: "Cinzel Decorative", serif;
+  font-size: clamp(24px, 7vw, 32px);
+  text-align: center;
+  color: #3a1d0a;
+}
+
+.account-page p {
+  margin: 0 0 12px;
+}
+
+.account-page a {
+  color: #4a2410;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.account-page a:hover {
+  color: #7a3a0c;
+}
+
+.account-page a:focus-visible,
+.account-page button:focus-visible,
+.account-input:focus-visible {
+  outline: 3px solid #7a4f12;
+  outline-offset: 2px;
+}
+
+/* Avertissement : sceau de cire rouge, toujours visible en tête de page. */
+.account-demo-notice {
+  padding: 10px 12px;
+  border: 1px solid #8b3a3a;
+  border-left-width: 5px;
+  border-radius: 4px;
+  background: rgba(139, 58, 58, 0.1);
+  color: #4a1410;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.account-hint {
+  font-size: 15px;
+  color: #5c4630;
+}
+
+/* Formulaires */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.account-form > p {
+  margin: 0;
+}
+
+.account-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.account-field label {
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.account-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #8a6a3a;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: #2a1708;
+  font: 17px Georgia, "Times New Roman", serif;
+}
+
+.account-input[aria-invalid='true'] {
+  border-color: #9b2c2c;
+  box-shadow: 0 0 0 1px #9b2c2c;
+}
+
+.account-password {
+  display: flex;
+  gap: 8px;
+}
+
+.account-toggle {
+  flex: none;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #8a6a3a;
+  border-radius: 6px;
+  background: #f3e3bd;
+  color: #3a1d0a;
+  font: 600 13px "Cinzel", serif;
+  cursor: pointer;
+}
+
+.account-toggle:hover {
+  background: #ead19a;
+}
+
+.account-error {
+  color: #8a2222;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.account-error::before {
+  content: '⚠ ';
+}
+
+.account-field .account-error,
+.account-field .account-hint {
+  margin: 0;
+}
+
+.account-alert {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 5px solid #9b2c2c;
+  background: #fbe9e6;
+  color: #6e1a1a;
+}
+
+.account-alert-success {
+  border-left-color: #2f6b3a;
+  background: #e9f3e6;
+  color: #1f4a27;
+}
+
+.account-alert-info {
+  border-left-color: #7a4f12;
+  background: #f5e6c3;
+  color: #3a1d0a;
+}
+
+/* Boutons : or des onglets du grimoire */
+.account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 1px solid #6b430d;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e0b552, #c3922f);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 235, 170, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.3);
+  color: #24130a;
+  font: 700 15px "Cinzel", serif;
+  letter-spacing: 1px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-page a.account-button {
+  color: #24130a;
+  text-decoration: none;
+}
+
+.account-button:hover {
+  background: linear-gradient(135deg, #ebc265, #cf9d38);
+}
+
+.account-button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.account-button-secondary,
+.account-page a.account-button-secondary {
+  background: #fffaf0;
+  color: #3a1d0a;
+}
+
+.account-button-secondary:hover {
+  background: #f3e3bd;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.account-switch {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Profil */
+.account-profile {
+  margin: 0 0 16px;
+}
+
+.account-profile > div {
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(90, 60, 30, 0.35);
+}
+
+.account-profile dt {
+  font-family: "Cinzel", serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5c4630;
+}
+
+.account-profile dd {
+  margin: 2px 0 0;
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}

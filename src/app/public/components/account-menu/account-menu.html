@@ -1,0 +1,14 @@
+<nav class="account-menu" aria-label="Compte (démonstration)">
+  @if (user(); as user) {
+    <a class="account-menu-link" routerLink="/profil" [attr.aria-label]="'Mon profil (' + user.pseudo + ')'">
+      <span aria-hidden="true">✦</span> Mon profil
+    </a>
+    <button type="button" class="account-menu-link" [disabled]="pending()" (click)="logout()">
+      Déconnexion
+    </button>
+  } @else {
+    <a #loginLink class="account-menu-link" routerLink="/connexion">
+      <span aria-hidden="true">✦</span> Connexion / Inscription
+    </a>
+  }
+</nav>

@@ -20,6 +20,15 @@
 @media (max-width: 939.98px), (max-height: 649.98px) {
   .home-page:has(app-grimoire-book) {
     padding-block: 12px 64px;
+    /* Page unique : le menu du compte se place au-dessus du grimoire, dans le flux. */
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .home-page:has(app-grimoire-book) app-account-menu {
+    position: static;
+    width: min(46rem, calc(100vw - 16px));
   }
 }
 

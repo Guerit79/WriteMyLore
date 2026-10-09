@@ -7,6 +7,8 @@ import {
   LocalStorageLoreRepository,
 } from './core/data/local-storage-lore-repository';
 import { LoreRepository } from './core/data/lore-repository';
+import { AccountRepository } from './core/data/account-repository';
+import { DemoAccountRepository } from './core/data/demo-account-repository';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -16,6 +18,7 @@ describe('App', () => {
       providers: [
         provideRouter(routes, withComponentInputBinding()),
         { provide: LoreRepository, useClass: LocalStorageLoreRepository },
+        { provide: AccountRepository, useClass: DemoAccountRepository },
       ],
     }).compileComponents();
   });

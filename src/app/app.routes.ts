@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { HomePage } from './public/pages/home-page/home-page';
 import { LoreEntryPage } from './public/pages/lore-entry-page/lore-entry-page';
+import { LoginPage } from './public/pages/login-page/login-page';
+import { ProfilePage } from './public/pages/profile-page/profile-page';
+import { RegisterPage } from './public/pages/register-page/register-page';
 import { loreEntryTitle } from './public/public-links';
 
 export const routes: Routes = [
@@ -15,6 +18,22 @@ export const routes: Routes = [
     path: 'lore/:id',
     component: LoreEntryPage,
     title: loreEntryTitle
+  },
+  // Comptes en MODE DÉMONSTRATION : aucune authentification réelle ni protection de route.
+  {
+    path: 'connexion',
+    component: LoginPage,
+    title: 'Connexion · WriteMyLore'
+  },
+  {
+    path: 'inscription',
+    component: RegisterPage,
+    title: 'Inscription · WriteMyLore'
+  },
+  {
+    path: 'profil',
+    component: ProfilePage,
+    title: 'Profil · WriteMyLore'
   },
   {
     // Accès discret, non sécurisé : aucune authentification pour l'instant.

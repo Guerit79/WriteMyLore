@@ -2,12 +2,13 @@ import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { GrimoireCover } from '../../../shared/components/grimoire-cover/grimoire-cover';
 import { GrimoireBook } from '../../../shared/components/grimoire-book/grimoire-book';
+import { AccountMenu } from '../../components/account-menu/account-menu';
 import { HOME_CHAPTER, chapterQueryParams } from '../../public-links';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [GrimoireCover, GrimoireBook, RouterLink],
+  imports: [GrimoireCover, GrimoireBook, RouterLink, AccountMenu],
   templateUrl: './home-page.html',
   styleUrls: ['./home-page.css']
 })
